@@ -6,9 +6,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>  Classifying Claims - Spot-Checking Algorithms | Machine Learning Projects
+  <title>  3. Classifying Claims - Spot-Checking Algorithms | Machine Learning Projects
 </title>
-  <link rel="canonical" href="./claim-class-spot-check.html">
+  <link rel="canonical" href="./part-3-classifying-claims-spot-checking-algorithms.html">
 
 
   <link rel="stylesheet" href="./theme/css/bootstrap.min.css">
@@ -17,7 +17,7 @@
   <link rel="stylesheet" href="./theme/css/theme.css">
 
   
-  <meta name="description" content="This post looks at how can perform initial spot testing of machine learning algorithms.">
+  <meta name="description" content="This post looks at how we can perform initial spot testing of machine learning algorithms.">
 
 
 </head>
@@ -38,9 +38,9 @@
   <article class="article">
     <header>
       <ul class="list-inline">
-        <li class="list-inline-item text-muted" title="2018-03-20T12:33:40.371507+00:00">
+        <li class="list-inline-item text-muted" title="2018-03-22T14:26:49.565101+00:00">
           <i class="fa fa-clock-o"></i>
-          Tue 20 March 2018
+          Thu 22 March 2018
         </li>
         <li class="list-inline-item">
           <i class="fa fa-folder-open-o"></i>
@@ -60,7 +60,7 @@
 <p>At this stage we want to determine some baseline results and apply vanilla implementations of common algorithms. From this we can choose one or two algorithms to investigate further. </p>
 <h2>Loading Our Data</h2>
 <p>We can load our X and Y as saved in part 2.</p>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">pickle</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
 <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;encoded_data.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data&quot;</span><span class="p">)</span>
     <span class="n">X</span><span class="p">,</span> <span class="n">Y</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
@@ -68,7 +68,7 @@
 </pre></div>
 
 
-<div class="highlight"><pre>Loading data
+<div class="highlight"><pre><span></span>Loading data
 11238 claims and 11238 classifications loaded
 </pre></div>
 
@@ -93,7 +93,7 @@
 - random-forest classifier.</p>
 <p>This <a href="http://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html">example</a> from scikit-learn may be useful.</p>
 <h2>Applying the Algorithms</h2>
-<div class="highlight"><pre><span class="kn">import</span> <span class="nn">numpy</span>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
 <span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
 <span class="kn">from</span> <span class="nn">sklearn.dummy</span> <span class="kn">import</span> <span class="n">DummyClassifier</span>
 <span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
@@ -120,21 +120,21 @@
 </pre></div>
 
 
-<div class="highlight"><pre><span class="c1"># We can use the class name to work out each</span>
-<span class="n">classifiers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+<div class="highlight"><pre><span></span><span class="c1"># We can use the class name to work out each</span>
+<span class="n">classifiers</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
 </pre></div>
 
 
-<div class="highlight"><pre>&#39;DummyClassifier&#39;
+<div class="highlight"><pre><span></span>&#39;DummyClassifier&#39;
 </pre></div>
 
 
-<div class="highlight"><pre><span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<div class="highlight"><pre><span></span><span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
 <span class="c1"># Convert one hot to target integer</span>
 <span class="n">Y_integers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
     <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
     <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
         <span class="n">name</span><span class="p">,</span> 
@@ -152,20 +152,8 @@
 </pre></div>
 
 
-<div class="highlight"><pre>Classifier DummyClassifier has an average classification accuracy of 20.14 (0.13)
-Classifier MultinomialNB has an average classification accuracy of 58.90 (1.12)
-Classifier KNeighborsClassifier has an average classification accuracy of 30.15 (2.74)
-Classifier SGDClassifier has an average classification accuracy of 56.79 (0.75)
-Classifier MLPClassifier has an average classification accuracy of 61.20 (0.54)
-Classifier DecisionTreeClassifier has an average classification accuracy of 47.33 (0.52)
-Classifier RandomForestClassifier has an average classification accuracy of 50.01 (1.17)
-Classifier AdaBoostClassifier has an average classification accuracy of 34.34 (1.31)
-Classifier SVC has an average classification accuracy of 62.52 (0.80)
-</pre></div>
-
-
 <p>Results</p>
-<div class="highlight"><pre>Classifier DummyClassifier has an average classification accuracy of 20.14 (0.13)
+<div class="highlight"><pre><span></span>Classifier DummyClassifier has an average classification accuracy of 20.14 (0.13)
 Classifier MultinomialNB has an average classification accuracy of 58.90 (1.12)
 Classifier KNeighborsClassifier has an average classification accuracy of 30.15 (2.74)
 Classifier SGDClassifier has an average classification accuracy of 56.79 (0.75)
@@ -177,7 +165,7 @@ Classifier SVC has an average classification accuracy of 62.52 (0.80)
 </pre></div>
 
 
-<p>Memory Error for Gaussian Process</p>
+<p>Gaussian process led to a memory error so we left that one out.</p>
 <h2>Observations</h2>
 <p>Our baseline - making a random choice based on the different proportions of labels available is around 20% accuracy, i.e. if we guess randomly we still correctly classify the claims 1 time out of 5. </p>
 <p>The k-Nearest Neighbours classifier does quite poorly. This indicates that clear groups within the TD-IDF vector space do not exist. The AdaBoost classifier has a comparative performance at around 35% accuracy. It would thus seem sensible to exclude these classifiers at this stage.</p>
@@ -188,7 +176,7 @@ Classifier SVC has an average classification accuracy of 62.52 (0.80)
 <h3>An Aside on Classification History</h3>
 <p>The results of this spot-check experiment rather nicely match the historic development of supervised classification algorithms. </p>
 <p>Before recent developments in deep-learning, linear classifiers such as linear SVMs offered the best performance. Bayesian methods then offered an alternative set of classifiers with a similar performance. Many early spam filters used Naive Bayes classifiers. </p>
-<p>The recent improvements in deep-learning offer the potential for gains over the previous state-of-the-art. However, as in our case, these gains are not huge with vanilla models (\&lt; 5%). </p>
+<p>The recent improvements in deep-learning offer the potential for gains over the previous state-of-the-art. However, as in our case, these gains are not huge with vanilla models (less than 5%). </p>
     </div>
   </article>
     </div>
@@ -207,5 +195,4 @@ Classifier SVC has an average classification accuracy of 62.52 (0.80)
 </div>    </div>
   </footer>
 </body>
-
 </html>
