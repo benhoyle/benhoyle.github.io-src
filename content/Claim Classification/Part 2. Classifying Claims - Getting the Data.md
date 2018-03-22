@@ -1,6 +1,5 @@
-Title: Classifying Claims - Preparing the Data
+Title: 2. Classifying Claims - Preparing the Data
 Tags: preparing_data
-Slug: claim-class-get-data
 Authors: Ben Hoyle
 Summary: This post looks at how we prepare the data for our claim classification example.
 
@@ -99,6 +98,7 @@ else:
     Loading data
     12000 claims and classifications loaded
 
+---
 
 ## 2. Pre-Processing Data
 
@@ -187,6 +187,8 @@ with open("raw_data.pkl", "wb") as f:
     pickle.dump(raw_data, f)
 ```
 
+---
+
 ## Interlude - Exploring the Data
 
 Here we will take a little interlude to explore our data and get a feel for its structure.
@@ -257,7 +259,7 @@ plt.xlabel('Claim Word Length')
 
 
 
-![png](output_23_1.png)
+![png]({filename}/images/2_output_23_1.png)
 
 
 As we can see the 6134 length claim is a clear outlier. The distribution is focused around 0 to around 600 words. Let's zoom in on that.
@@ -279,7 +281,7 @@ plt.xlabel('Claim Word Length')
 
 
 
-![png](output_25_1.png)
+![png]({filename}/images/2_output_25_1.png)
 
 
 When applying deep learning algorithms we often need to set a maximum sequence length. When dealing with words, this is equal to the maximum number of words expected in a claim. A lower maximum sequence length will help reduce our training time. 
@@ -330,6 +332,8 @@ class_count
 What is quite interesting is we see that the data is mainly clusted around class A, B, G and H. Classes C, D, E and F have a limited number of associated claims.  
 
 ***A future extension to this project may be to balance the data samples. This may improve performance.***
+
+---
 
 # 3. Transform the Data
 

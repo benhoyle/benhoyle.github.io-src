@@ -1,6 +1,5 @@
-Title: Classifying Claims - Defining the Problem
+Title: 1. Classifying Claims - Defining the Problem
 Tags: defining_the_problem
-Slug: claim-class-define-problem
 Authors: Ben Hoyle
 Summary: This post looks at how we define the problem of claim classification.
 
@@ -8,7 +7,10 @@ Summary: This post looks at how we define the problem of claim classification.
 
 This post looks at how we define the problem of claim classification.  
 
+-----
+
 # What is the problem?
+
 
 ## Problem Introduction
 
@@ -64,6 +66,8 @@ There are eight main Sections in the IPC:
 
 Our problem then appears to be a multi-class classification problem with 8 different classes. The input for our problem is a paragraph of text. Hence, the problem appears similar to many other text classification problems, e.g. where categories need to be assigned to blocks of text. For example, similar problems include labelling emails or classifying citation abstracts.
 
+---
+
 # Why does the problem need to be solved?
 
 Assigning a patent classification helps allocate patent work to different teams and departments. The chosen group may also be used to select different models and automated processing. For example, chemistry patent cases may need to be managed and processed differently to computing patent cases.
@@ -89,6 +93,8 @@ A solution will also allow me to demonstrate my skills in applying machine learn
 I will write up my results in a blog post report that can also be exported to PDF. There will be a separate blog post for each stage in my investigation and a summary page that links to the detailed work.
 
 The code from the solution may be used in my patentdata project, for example, claim-to-vector conversion may be added to patentdata functionality. This could be implemented as a "classify()" method on a Claim object.
+
+---
 
 # How Would I Solve the Problem?
 

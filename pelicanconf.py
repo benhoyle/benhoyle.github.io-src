@@ -18,6 +18,8 @@ USE_FOLDER_AS_CATEGORY = True
 
 DEFAULT_LANG = u'en'
 
+STATIC_PATHS = ['images', 'notebooks']
+
 # Set default source for slug metadata
 SLUGIFY_SOURCE = 'basename'
 
@@ -33,3 +35,5 @@ AUTHOR_FEED_RSS = None
 
 # Uncomment following line if you want document-relative URLs when developing
 RELATIVE_URLS = True
+
+ARTICLE_ORDER_BY = 'title'

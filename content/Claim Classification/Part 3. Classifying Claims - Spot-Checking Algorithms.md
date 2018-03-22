@@ -1,8 +1,7 @@
-Title: Classifying Claims - Spot-Checking Algorithms
+Title: 3. Classifying Claims - Spot-Checking Algorithms
 Tags: spot_checking
-Slug: claim-class-spot-check
 Authors: Ben Hoyle
-Summary: This post looks at how can perform initial spot testing of machine learning algorithms.
+Summary: This post looks at how we can perform initial spot testing of machine learning algorithms.
 
 # 3. Classifying Claims - Spot-Checking Algorithms
 
@@ -93,13 +92,7 @@ classifiers = [
 classifiers[0].__class__.__name__
 ```
 
-
-
-
     'DummyClassifier'
-
-
-
 
 ```python
 results = list()
@@ -124,17 +117,6 @@ for clf in classifiers:
     )
 ```
 
-    Classifier DummyClassifier has an average classification accuracy of 20.14 (0.13)
-    Classifier MultinomialNB has an average classification accuracy of 58.90 (1.12)
-    Classifier KNeighborsClassifier has an average classification accuracy of 30.15 (2.74)
-    Classifier SGDClassifier has an average classification accuracy of 56.79 (0.75)
-    Classifier MLPClassifier has an average classification accuracy of 61.20 (0.54)
-    Classifier DecisionTreeClassifier has an average classification accuracy of 47.33 (0.52)
-    Classifier RandomForestClassifier has an average classification accuracy of 50.01 (1.17)
-    Classifier AdaBoostClassifier has an average classification accuracy of 34.34 (1.31)
-    Classifier SVC has an average classification accuracy of 62.52 (0.80)
-
-
 Results
 ```
 Classifier DummyClassifier has an average classification accuracy of 20.14 (0.13)
@@ -148,7 +130,7 @@ Classifier AdaBoostClassifier has an average classification accuracy of 34.34 (1
 Classifier SVC has an average classification accuracy of 62.52 (0.80)
 
 ```
-Memory Error for Gaussian Process
+Gaussian process led to a memory error so we left that one out.
 
 ## Observations
 
@@ -170,4 +152,4 @@ The results of this spot-check experiment rather nicely match the historic devel
 
 Before recent developments in deep-learning, linear classifiers such as linear SVMs offered the best performance. Bayesian methods then offered an alternative set of classifiers with a similar performance. Many early spam filters used Naive Bayes classifiers. 
 
-The recent improvements in deep-learning offer the potential for gains over the previous state-of-the-art. However, as in our case, these gains are not huge with vanilla models (\< 5%). 
+The recent improvements in deep-learning offer the potential for gains over the previous state-of-the-art. However, as in our case, these gains are not huge with vanilla models (less than 5%). 
