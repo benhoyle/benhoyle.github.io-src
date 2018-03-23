@@ -3,3 +3,11 @@
 pelican-plugins/*
 pelican-plugins
 .venv/
+*~
+._*
+*.lock
+*.DS_Store
+*.swp
+*.out
+*.py[cod]
+output
