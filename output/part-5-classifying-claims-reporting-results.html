@@ -39,92 +39,153 @@
     <div class="content">
       <h1>5. Classifying Claims - Reporting Results</h1>
 <p>Here we will look at what we have learnt during our project to classify patent claims. The aim of doing this is to consolidate what we have learnt, and practice a methodology for presenting our results.</p>
-<p>The post <a href="https://machinelearningmastery.com/how-to-use-machine-learning-results/">here</a> suggests the following structure for reporting our results:
-1. Context - Define and describe why we are undertaking the project;
-2. Problem - Describe the problem we are looking to solve;
-3. Solution - Describe the solution our results suggest;
-4. Findings - Present our results;
-5. Limitations - Present the limitations we uncovered; and
-6. Conclusions - Revisit and summarise the context, problem and solution (or why, question and answer)</p>
+<p>The post <a href="https://machinelearningmastery.com/how-to-use-machine-learning-results/">here</a> suggests the following structure for reporting our results:</p>
+<ol>
+<li>Context - Define and describe why we are undertaking the project;</li>
+<li>Problem - Describe the problem we are looking to solve;</li>
+<li>Solution - Describe the solution our results suggest;</li>
+<li>Findings - Present our results;</li>
+<li>Limitations - Present the limitations we uncovered; and</li>
+<li>Conclusions - Revisit and summarise the context, problem and solution (or why, question and answer)</li>
+</ol>
 <p>We will look at these one by one.</p>
+<hr>
 <h2>1. Context</h2>
 <p>As described in our first post, the project was undertaken to practice applying a methodical approach to real-world patent data. </p>
 <p>Within the world of patent law, we have sets of patent claims, which set out the scope of legal protection. These claims, as they are contained in a patent application, are assigned a patent classification, which is a hierarchical code that categorises the subject-matter of the claims. </p>
 <p>Patent specifications are published and made available for download in bulk. This provides large labelled datasets we can use to practice supervised machine learning. In particular, we can extract a main independent claim and an International Patent Classification (IPC) code as data for machine learning algorithms. To simplify things, we can start with the first letter of the IPC code, which assigns each patent application to one of eight classes.</p>
+<hr>
 <h2>2. Problem</h2>
 <p>The problem we are looking to solve is to develop a machine learning algorithm that, given the text of a patent claim, can predict the first letter of the IPC code, i.e. the first level of subject matter classification.</p>
+<hr>
 <h2>3. Solution</h2>
-<p>Our results indicate that a multi-layer perceptron or a Naive Bayes classifier would be the best at performing this task. </p>
-<p>However, from our results it does not seem possible to implement an accurate classifier for this problem. The best solutions return an accuracy of around 60%. While better than chance given the proportions of the data (~20%) this is still not necessarily high enough to confidently apply a classifier in a processing pipeline, e.g. to differentially process the text of the patent claim. </p>
+<p>Our results indicate that one of a non-linear Support Vector Machine (SVM), a multi-layer perceptron (MLP) or a Naive Bayes classifier would be the best at performing this task. </p>
+<p>For a production solution, it appears preferable to use a Naive Bayes classifier despite the SVM and MLP outperforming this classifier by 2-3%. This is because the Naive Bayes classifier is much more efficient: it is the quickest of the three to train and does not require a large number of parameters. It also has good characteristics, such as performing better at classifying certain classes than the MLP.</p>
+<p>From our results it does not seem possible to implement an accurate classifier for this problem. The best solutions return an accuracy of around 60%. While better than chance given the proportions of the data (~20%) this is still not necessarily high enough to confidently apply a classifier in a processing pipeline, e.g. to differentially process the text of the patent claim. </p>
 <p>It would, though, appear possible to provide probabilities for classes that could support human decision making.   </p>
+<hr>
 <h2>4. Findings</h2>
 <p>Our finding will be split into three sections:
 1. Findings regarding the nature of the problem and the data;
 2. Findings regarding suitable machine learning algorithms; and
 3. Findings regarding specific algorithms.</p>
 <h3>4.1 Findings regarding the nature of the problem and the data</h3>
-<p>A general finding was that changes in algorithms, parameters, and model archectures only led to small improvements in accuracy (e.g. often along the lines of 1-2%). Generally, the best classification accuracy was fixed at 60%.</p>
-<p>The project reinforced the finding that success in text classification tasks is more about the data pre-processing than the machine learning algorithms. </p>
-<p>For example, a</p>
+<p>A general finding was that changes in algorithms, parameters, and model archectures only led to small improvements in accuracy (e.g. often along the lines of 1-2%). Generally, the best classification accuracy was fixed at around 60%.</p>
+<p>Changing the form of the data had suprisingly little effect. </p>
+<p>Term Frequency - Inverse Document Frequency (TD-IDF) was the best metric for generating a bag of words. However, using word presence (i.e. a binary variable) or word count only reduced classification accuracy by 1-2%. This improvement is close to the bounds of natural variance. As such, a Naive Bayes implementation that uses a binary count could be used if processing resources were limited (e.g. within embedded systems). It should be noted that normalising by the sequence length appeared to corrupt Naive Bayes classification.</p>
+<p>I imagined that increasing our number of data samples would provide a reasonably large improvement. However, this was not the case - nearly doubling our number of data samples again only provided a 1-2% increase. This improvement is again close to the bounds of natural variance. This suggests that our low accuracy value may be due to the nature of the classification distributions, e.g. it may be dragged down by poor performance on infrequent classes. This is also consistent with the reasonably good performance of the Naive Bayes classifier below.</p>
+<p>Similarly, doubling our vocabulary did not have a significant effect on performance, again only increasing accuracy by 1-2%. This indicates that a production system could trade-off accuracy for vocabulary size.</p>
+<p>As the TD-IDF metric is already normalised, subtracting the mean and dividing by the variance did not improve performance.</p>
 <h3>4.2 Findings regarding suitable machine learning algorithms</h3>
+<h4>Spot Check Results</h4>
 <p>The results of our spot-checks were as follows:</p>
 <table>
 <thead>
 <tr>
 <th>Classifer</th>
-<th align="center">Average Accuracy (%)</th>
-<th align="right">Standard Deviation (%)</th>
+<th align="center">Accuracy</th>
+<th align="center">SD</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>col 3 is</td>
-<td align="center">right-aligned</td>
-<td align="right">$1600</td>
+<td>Non-Linear Support Vector Machine</td>
+<td align="center">62.52 %</td>
+<td align="center">0.80 %</td>
 </tr>
 <tr>
-<td>col 2 is</td>
-<td align="center">centered</td>
-<td align="right">$12</td>
+<td>MultiLayer Perceptron</td>
+<td align="center">61.20 %</td>
+<td align="center">0.54 %</td>
 </tr>
 <tr>
-<td>zebra stripes</td>
-<td align="center">are neat</td>
-<td align="right">$1</td>
+<td>Naive Bayes</td>
+<td align="center">58.90 %</td>
+<td align="center">1.12 %</td>
 </tr>
 <tr>
-<td>col 3 is</td>
-<td align="center">right-aligned</td>
-<td align="right">$1600</td>
+<td>Stochastic Gradient Descent</td>
+<td align="center">56.79 %</td>
+<td align="center">0.75 %</td>
 </tr>
 <tr>
-<td>col 2 is</td>
-<td align="center">centered</td>
-<td align="right">$12</td>
+<td>Random Forest</td>
+<td align="center">50.01 %</td>
+<td align="center">1.17 %</td>
 </tr>
 <tr>
-<td>zebra stripes</td>
-<td align="center">are neat</td>
-<td align="right">$1</td>
+<td>Decision Trees</td>
+<td align="center">47.33 %</td>
+<td align="center">0.52 %</td>
+</tr>
+<tr>
+<td>Ada Boost</td>
+<td align="center">34.34 %</td>
+<td align="center">1.31 %</td>
+</tr>
+<tr>
+<td>kNearest Neighbours</td>
+<td align="center">30.15 %</td>
+<td align="center">2.74 %</td>
+</tr>
+<tr>
+<td>Random Choice</td>
+<td align="center">20.14 %</td>
+<td align="center">0.13 %</td>
 </tr>
 </tbody>
 </table>
+<p>Here we see that our best performing algorithm is the non-linear Support Vector Machine (SVM). SVMs are known to work well on sparse data of high dimensionality. This is the case for us and our results support that finding.</p>
+<p>Tree and cluster based methods generally do not perform as well.</p>
+<p>However, the training time for the non-linear SVM in scikit-learn (based on libsvm) is very long, much longer than either the MLP or the Naive Bayes classifier. The Naive Bayes classifier is one of the quickest, taking only a few seconds, compared to tens of minutes for the MLP and up to an hour for the SVM. </p>
+<h4>Comparing Predictions</h4>
+<p>It was interesting to compare how our Naive Bayes and MLP classifiers were predicting categories.</p>
+<p><img alt="png" src="./images/4a_output_19_1.png"> <img alt="png" src="./images/4a_output_19_2.png"></p>
+<p>The Naive Bayes classifier struggled on class A - often confusing it with class C. However, it out-performs the MLP classifier on classes C, E, F and G -  a majority of the classes.</p>
+<p>The MLP classifier obtains a higher classification accuracy by outperforming on classes A and H. Indeed it looks like the misclassification of class A by the Naive Bayes classifier was the main reason for it having an overal accuracy below the MLP.</p>
+<p>This is one reason why the Naives Bayes classifier may actually be better in production despite having a headline accuracy below the MLP.</p>
+<p>It was disappointing to see that an ensemble classifier did not seem to capitalise on the relative strengths of both classifiers, at least in terms of overall classification accuracy.  </p>
+<p><img alt="png" src="./images/4a_output_27_2.png"></p>
+<p>The Naive Bayes brings down the performance of the ensemble classifier for classes A and H, despite increasing the accuracy for the other classes. This suggests that the Naive Bayes classifiers may be assigning fairly high incorrect probabilities for classes A and H, such that a hard or soft vote still goes with the missclassification.</p>
+<p>Ensemble classifiers appear a fruitful area for further investigation. For example, it may be that be adjusting the weightings of the ensemble we can avoid the degnerative performance for classes A and H.</p>
+<h3>4.3 Findings regarding specific algorithms</h3>
+<p>While the non-linear SVM provided the best performance, it's long training time made it difficult to experiment with. The Naive Bayes classifier has only one tuneable parameter (alpha relating to a level of smoothing). Adjusting this parameter had no real significant affect. Attention was thus focussed on the MLP classifer. To have access to more aspects of configuration we moved to use Keras.</p>
+<h4>Overfitting</h4>
+<p>A key finding in this project was the importance of regularisation to avoid overfitting.</p>
+<p>Our simple one layer neural network suffered greatly from overfitting on the data.</p>
+<p><img alt="png" src="./images/output_11_1.png"> <img alt="png" src="./images/output_11_2.png"></p>
+<p>As can be seen in these graphs, within a few epochs our network has a near 100% accuracy as it learns to overfit on the supplied data. Considering that we have 10,000 data samples and, due to the high dimensionality input, our model has 2.5 million parameters, it is easy to see how overfitting could occur - i.e. there are many more parameters than samples so our network can simply learn to memorise each sample. </p>
+<p>Overfitting leads to poor performance on validation datasets, i.e. data that is not used to train the neural network. This is most visible in the graph of model loss: while model loss reduces during training for the training data it <em>increases</em> for the test data set, i.e. we perform worse on our test data as our model overfits on our training data.</p>
+<p>Two techniques are recommended for overfitting: Dropout and Regularisation. In our case it turned out that Regularisation was more effective, and that a combination of moderate amounts of both Dropout and Regularisation acted to align training and test performance. For example L2 regularisation with a lambda value of 0.05 and Dropout between layers of around 0.2-0.25 worked well.</p>
+<p><img alt="png" src="./images/4C_output_20_1.png"> <img alt="png" src="./images/4C_output_20_2.png"></p>
+<p>However, even in this case, performance quickly saturates and additional trainings does not do much to increase our accuracy or reduce our loss. </p>
+<p>This is consistent with our other results - it suggests that there are certain easily discernable rules for work for 60-80% of class classifications, but that beyond that there are no absolute rules and that certain claims cannot be predictable assigned a class. </p>
+<h4>Architectures</h4>
+<p>Moving to deeper and more complex neural network did not significantly improve accuracy. This is an important lesson - there are many different possible architectures we can explore, but ultimately we are dependent on the form of our data.</p>
+<hr>
+<h2>5. Limitations</h2>
+<p>There seemed to be a natural limit of around 60% to classifier performance. Here are some ideas for why this may be:</p>
 <ul>
-<li>A random choice in line with the label proportions returned an average classification accuracy of 20.14% (standard deviation 0.13%)</li>
-<li>A Naive Bayes classifier returned an average classification accuracy of 58.90% (standard deviation 1.12%)</li>
-<li>A k-Nearest Neighbours classifier with 8 clusters returned an average classification accuracy of 30.15% (standard deviation 2.74%)</li>
-<li>A stochastic gradient descent classifier returned an average classification accuracy of 56.79% (standard deviation 0.75%)</li>
-<li>A multilayer perceClassifier MLPClassifier has an average classification accuracy of 61.20 (0.54)
-Classifier DecisionTreeClassifier has an average classification accuracy of 47.33 (0.52)
-Classifier RandomForestClassifier has an average classification accuracy of 50.01 (1.17)
-Classifier AdaBoostClassifier has an average classification accuracy of 34.34 (1.31)
-Classifier SVC has an average classification accuracy of 62.52 (0.80)</li>
+<li>The claims do not contain enough information. This may especially be the case for particularly broad claims. We need to also look at the text of the detailed description.</li>
+<li>A number of different classifications may be assigned to a patent application. For example, often claims may be classified in both categories G and H. As such the models may be accurate predicting another of the classifications but incorrectly predicting the chosen single category.</li>
+<li>Classifications may be assigned by human beings who are not necessarily consistent. Hence, there may be contradictions in our data.</li>
 </ul>
+<p>A number of other limitations were uncovered:</p>
+<ul>
+<li>Computing resources limited the effectiveness of our most accurate classifier.</li>
+<li>Overfitting limited the performance of our neural network models - this was partially mitigated using Dropout and regularisation.</li>
+<li>The compressed XML archives of patent data make it difficult to quickly access large amounts of data - when trying to process 20,000 patent documents, we had errors after processing 19,000. It may be that there are other datasets we can use, such as Google's BigQuery or other downloadable preprocessed sets of claim-classification pairs.</li>
+</ul>
+<hr>
+<h2>6. Conclusions</h2>
+<p>So, how best to assign a Section to a patent claim? </p>
+<p>It turns out that a Naive Bayes classifier is a good all-round solution. I would select this for any production system. Although SVM and neural network classifiers showed slightly better performance, as measured by overall classification accuracy, the out-of-the-box quick performance of the Naive Bayes classifier, and it's reasonable strengths on individual classes, makes me believe that this is a better solution.</p>
+<p>Even with advanced techniques overall classification accuracy was limited to around 60%. This is still better than 20% if chosen at random. However, it suggests that we cannot implement a deterministic system that makes decisions based on programmatically assigned Sections. We may thus need to shift our perspective, e.g. could we show suggested Sections, together with probabilities to help human decision making, or offer a "confirm Section" option that allows the over-riding of the missclassification of certain Sections. </p>
     </div>
     <hr/>
     <footer>
       <ul class="list-inline">
-        <li class="list-inline-item text-muted" title="2018-03-23T10:12:38.836349+00:00">
+        <li class="list-inline-item text-muted" title="2018-03-23T12:18:53.909029+00:00">
           <i class="fa fa-clock-o"></i>
           Fri 23 March 2018
         </li>
@@ -157,4 +218,11 @@ Classifier SVC has an average classification accuracy of 62.52 (0.80)</li>
 </div>    </div>
   </footer>
 </body>
-</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script>
+$( document ).ready(function() {
+    $('table').addClass('table table-bordered');
+    $('tbody').addClass('table-striped');
+    $('th').addClass('text-center');
+});
+</script></html>
