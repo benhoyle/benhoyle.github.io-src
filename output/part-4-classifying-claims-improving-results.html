@@ -6,7 +6,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-  <title>  4A. Classifying Claims - Improving Results | Machine Learning Projects
+  <title>  4. Classifying Claims - Improving Results | Machine Learning Projects
 </title>
   <link rel="canonical" href="./part-4-classifying-claims-improving-results.html">
 
@@ -37,7 +37,7 @@
     <div class="container">
   <article class="article">
     <div class="content">
-      <h1>4A. Classifying Claims - Improving Results</h1>
+      <h1>4. Classifying Claims - Improving Results</h1>
 <p>At this stage, we will look at taking a few of our best-performing algorithms from our previous post and attempting to increase performance. </p>
 <hr>
 <p>As you may remember, the best-performing algorithms were: </p>
@@ -75,6 +75,7 @@
 </pre></div>
 
 
+<p>--</p>
 <h2>Naive Bayes to Start</h2>
 <p>It turns out that there are not too many parameters we can vary for a Naive Bayes classifier. In fact, in scikit-learn there is only one tuneable parameter - alpha - that sets an amount of additive smoothing (see the documentation <a href="http://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html">here</a>.</p>
 <p>The smoothing is set to 1.0 as a default. Let's have a look at performance if we turn this off by setting the alpha parameter to 0.</p>
@@ -97,6 +98,7 @@
 
 
 <p>As we can see changing this parameter doesn't seem to have that much effect.</p>
+<hr>
 <h2>Improving Performance with Algorithms</h2>
 <p>Now, scikit-learn provides a rather simple multi-layer neural network implementation. To improve performance we can experiment with more advanced neural network architectures.  </p>
 <p>Questions we can ask include:
@@ -543,7 +545,7 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 
 <p><img alt="png" src="./images/output_20_1.png"></p>
 <p><img alt="png" src="./images/output_20_2.png"></p>
-<h2>Regularisation</h2>
+<h3>Regularisation</h3>
 <p>One method of attempting to avoid overfitting is to limit the magnitude of our weights using regularisation. This is explained in this <a href="https://cambridgespark.com/content/tutorials/neural-networks-tuning-techniques/index.html">post</a>.  </p>
 <p>Here we will try L2 regularisation, which penalises large weight values.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.regularizers</span> <span class="kn">import</span> <span class="n">l2</span> <span class="c1"># L2-regularisation</span>
@@ -737,13 +739,1176 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 <p><img alt="png" src="./images/output_32_2.png"></p>
 <p>Normalising our data does not seem to have any significant effect. This is to be expected - our data is already normalised to a certain extent, and we are dealing with sparse language data rather than continuous image data. </p>
 <p>This processing does appear to help slightly to reduce overfitting. This maybe suggests that regularisation may be useful.</p>
+<h3>Changing Input Dimensionality</h3>
+<p>Let's see if increasing or decreasing the dimensionality of our input data affects our classification results. We can do this by changing the number of words cap that is passed to our tokeniser.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;raw_data.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data&quot;</span><span class="p">)</span>
+    <span class="n">raw_data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{0} claims and classifications loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Loading data
+11238 claims and classifications loaded
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Create our Y vector as before</span>
+<span class="kn">from</span> <span class="nn">keras.utils</span> <span class="kn">import</span> <span class="n">to_categorical</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+
+<span class="n">Y_class</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
+
+<span class="c1"># encode class values as integers</span>
+<span class="n">label_e</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">label_e</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Y_class</span><span class="p">)</span>
+<span class="n">encoded_Y</span> <span class="o">=</span> <span class="n">label_e</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Y_class</span><span class="p">)</span>
+<span class="c1"># convert integers to dummy variables (i.e. one hot encoded)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">to_categorical</span><span class="p">(</span><span class="n">encoded_Y</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our classes are now a matrix of {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Original label: {0}; Converted label: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y_class</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nt">Our</span> <span class="nt">classes</span> <span class="nt">are</span> <span class="nt">now</span> <span class="nt">a</span> <span class="nt">matrix</span> <span class="nt">of</span> <span class="o">(</span><span class="nt">11238</span><span class="o">,</span> <span class="nt">8</span><span class="o">)</span>
+<span class="nt">Original</span> <span class="nt">label</span><span class="o">:</span> <span class="nt">A</span><span class="o">;</span> <span class="nt">Converted</span> <span class="nt">label</span><span class="o">:</span> <span class="cp">[</span><span class="mi">1</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span><span class="cp">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Let&#39;s start with decreasing our dimensionality</span>
+
+<span class="kn">from</span> <span class="nn">keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">raw_data</span><span class="p">]</span>
+
+<span class="c1"># create the tokenizer</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">2500</span><span class="p">)</span>
+<span class="c1"># fit the tokenizer on the documents</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tfidf&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our data has the following dimensionality: &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Our data has the following dimensionality:  (11238, 2500)
+</pre></div>
+
+
+<p>We are going to leave our SVC classifier for these experiments as it took too long to train.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.neural_network</span> <span class="kn">import</span> <span class="n">MLPClassifier</span>
+
+<span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">MultinomialNB</span><span class="p">(),</span>
+    <span class="n">MLPClassifier</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="c1"># Convert one hot to target integer</span>
+<span class="n">Y_integers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+        <span class="n">name</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+    <span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span>
+        <span class="s2">&quot;Classifier {0} has an average classification accuracy of {1:.2f} ({2:.2f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="p">)</span>    
+    <span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Classifier MultinomialNB has an average classification accuracy of 57.04 (0.97)
+Classifier MLPClassifier has an average classification accuracy of 60.17 (1.07)
+</pre></div>
+
+
+<p>Here are our results:</p>
+<ul>
+<li>Classifier MultinomialNB has an average classification accuracy of 57.04 (0.97)</li>
+<li>Classifier MLPClassifier has an average classification accuracy of 60.17 (1.07)</li>
+</ul>
+<p>Comparing with our previous results:</p>
+<ul>
+<li>Classifier MultinomialNB has an average classification accuracy of 58.90 (1.12)</li>
+<li>Classifier MLPClassifier has an average classification accuracy of 61.20 (0.54)</li>
+</ul>
+<p>We see a slight reduction in accuracy, although we are on or close to the bounds of variance. Reducing our dimensionality does not seem to be the way to proceed.</p>
+<p>Even though our SVC classifier performed well in the spot-checks - it takes a very long time to train. For these more general experiments, we will thus limit to the Naive Bayes and the MLP classifier.</p>
+<div class="highlight"><pre><span></span><span class="c1"># Now let&#39;s increase our dimensionality</span>
+
+<span class="c1"># Delete our earlier data</span>
+<span class="k">del</span> <span class="n">X</span><span class="p">,</span> <span class="n">t</span>
+
+<span class="kn">from</span> <span class="nn">keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="c1"># create the tokenizer</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">10000</span><span class="p">)</span>
+<span class="c1"># fit the tokenizer on the documents</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tfidf&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our data has the following dimensionality: &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># SVC takes too long to train</span>
+<span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">MultinomialNB</span><span class="p">(),</span>
+    <span class="n">MLPClassifier</span><span class="p">()</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+        <span class="n">name</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+    <span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span>
+        <span class="s2">&quot;Classifier {0} has an average classification accuracy of {1:.2f} ({2:.2f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="p">)</span>    
+    <span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Our data has the following dimensionality:  (11238, 10000)
+Classifier MultinomialNB has an average classification accuracy of 59.26 (1.16)
+Classifier MLPClassifier has an average classification accuracy of 62.11 (0.36)
+</pre></div>
+
+
+<p>Results:</p>
+<ul>
+<li>Classifier MultinomialNB has an average classification accuracy of 59.26 (1.16)</li>
+<li>Classifier MLPClassifier has an average classification accuracy of 62.11 (0.36)</li>
+</ul>
+<p>There does appear to be a small increase in performance (~2% - where variance is ~1%). So more words does help us. However, it does not help as much as we would expect it too (e.g. doubling our number of counted words does not double performance).</p>
+<p>This indicates that much of our classification is being performed on a limited set of terms.  </p>
+<p>Let's see what another doubling of our dimensionality does...</p>
+<div class="highlight"><pre><span></span><span class="c1"># Delete our earlier data</span>
+<span class="k">del</span> <span class="n">X</span><span class="p">,</span> <span class="n">t</span>
+
+<span class="kn">from</span> <span class="nn">keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="c1"># create the tokenizer</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+<span class="c1"># fit the tokenizer on the documents</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tfidf&#39;</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our data has the following dimensionality: &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+<span class="c1"># SVC takes too long to train</span>
+<span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">MultinomialNB</span><span class="p">(),</span>
+    <span class="n">MLPClassifier</span><span class="p">()</span>
+<span class="p">]</span>
+<span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+        <span class="n">name</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+    <span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span>
+        <span class="s2">&quot;Classifier {0} has an average classification accuracy of {1:.2f} ({2:.2f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="p">)</span>    
+    <span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Our data has the following dimensionality:  (11238, 20000)
+Classifier MultinomialNB has an average classification accuracy of 59.24 (1.33)
+Classifier MLPClassifier has an average classification accuracy of 61.91 (0.43)
+</pre></div>
+
+
+<p>Results:</p>
+<ul>
+<li>Classifier MultinomialNB has an average classification accuracy of 59.24 (1.33)</li>
+<li>Classifier MLPClassifier has an average classification accuracy of 61.91 (0.43)</li>
+</ul>
+<p>There seems to be a leveling off of performance with increased dimensionality. Here there will always be a trade-off between dimensionality and performance. In this case, as we are only obtaining a small percentage increase, it may be better to use a smaller dimensionality to allow faster classification.</p>
+<p>Another aside on speed: the Naive Bayes classifier is much faster to train than the MLP classifier, and the difference in performance is only 1-2%. If we were looking at a production system, there may be a benefit in using the Naive Bayes classifier over the more fancy deep-learning approaches.</p>
+<h3>Changing Data Conversion Methods</h3>
+<p>The texts_to_matrix method for the text tokeniser has for different modes: "binary", "count", "tfidf", "freq". These are not explained but it is presumed that binary provides just an indication of presence for a word, and count/freq provide un-normalised count data. Looking at the <a href="https://github.com/keras-team/keras/blob/master/keras/preprocessing/text.py">source</a>, freq divides the count c by the length of the sequence. </p>
+<div class="highlight"><pre><span></span><span class="n">modes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;binary&quot;</span><span class="p">,</span> <span class="s2">&quot;count&quot;</span><span class="p">,</span> <span class="s2">&quot;freq&quot;</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="n">modes</span><span class="p">:</span>
+    <span class="c1"># create the tokenizer</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+    <span class="c1"># fit the tokenizer on the documents</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+    <span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="k">print</span><span class="p">(</span>
+            <span class="s2">&quot;Mode {0} - Classifier {1} has an average classification accuracy of {2:.2f} ({3:.2f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">mode</span><span class="p">,</span>
+                <span class="n">name</span><span class="p">,</span> 
+                <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+                <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+            <span class="p">)</span>    
+        <span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Mode binary - Classifier MultinomialNB has an average classification accuracy of 57.07 (0.82)
+Mode binary - Classifier MLPClassifier has an average classification accuracy of 59.63 (0.71)
+Mode count - Classifier MultinomialNB has an average classification accuracy of 57.53 (0.89)
+Mode count - Classifier MLPClassifier has an average classification accuracy of 59.00 (0.63)
+Mode freq - Classifier MultinomialNB has an average classification accuracy of 30.82 (0.05)
+Mode freq - Classifier MLPClassifier has an average classification accuracy of 57.65 (1.38)
+</pre></div>
+
+
+<p>Results:</p>
+<ul>
+<li>Mode binary - Classifier MultinomialNB has an average classification accuracy of 57.07 (0.82)</li>
+<li>Mode binary - Classifier MLPClassifier has an average classification accuracy of 59.63 (0.71)</li>
+<li>Mode count - Classifier MultinomialNB has an average classification accuracy of 57.53 (0.89)</li>
+<li>Mode count - Classifier MLPClassifier has an average classification accuracy of 59.00 (0.63)</li>
+<li>Mode freq - Classifier MultinomialNB has an average classification accuracy of 30.82 (0.05)</li>
+<li>Mode freq - Classifier MLPClassifier has an average classification accuracy of 57.65 (1.38)</li>
+</ul>
+<p>Some interestings results here. TD-IDF appears the best metric to use. Frequency counts appear to cause problems with both classifiers (the MLP does not converge to a solution after 200 iterations). Using TD-IDF over just count data appears to increase performance by 1-2%.</p>
+<h3>Getting More Data</h3>
+<p>Let's see what happens when we try 20,000 claims. </p>
+<p>At the moment the interface for getting the data is a little slow...</p>
+<div class="highlight"><pre><span></span><span class="c1"># Now try 20,000 patent publications at random</span>
+
+<span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">Counter</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Get the claim 1 and classificationt text</span>
+
+<span class="n">PIK</span> <span class="o">=</span> <span class="s2">&quot;claim_and_class20k.data&quot;</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">PIK</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">PIK</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{0} claims and classifications loaded&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">patentdata.corpus</span> <span class="kn">import</span> <span class="n">USPublications</span>
+    <span class="kn">from</span> <span class="nn">patentdata.models.patentcorpus</span> <span class="kn">import</span> <span class="n">LazyPatentCorpus</span>
+
+    <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;/patentdata/media/SAMSUNG1/Patent_Downloads&#39;</span>
+    <span class="n">ds</span> <span class="o">=</span> <span class="n">USPublications</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+
+    <span class="n">lzy</span> <span class="o">=</span> <span class="n">LazyPatentCorpus</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">sample_size</span><span class="o">=</span><span class="mi">20000</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">pd</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lzy</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">classifications</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span><span class="o">.</span><span class="n">as_string</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">classifications</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">classifications</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">claim1_text</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">claimset</span><span class="o">.</span><span class="n">get_claim</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">text</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">claim1_text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">current_data</span> <span class="o">=</span> <span class="p">(</span><span class="n">claim1_text</span><span class="p">,</span> <span class="n">classifications</span><span class="p">)</span>
+        <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_data</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="o">%</span> <span class="mi">500</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Saving a checkpoint at {0} files&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+            <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Current data = &quot;</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">title</span><span class="p">)</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">PIK</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">PIK</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="s2">&quot;{0} claims saved&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Loading data
+19001 claims and classifications loaded
+</pre></div>
+
+
+<p>We got a memory error after 19000 but that is still more data than we had before. Let's use that. You can find the "claim_and_class20k.data" file in the GitHub directory if you want to load the data yourself.</p>
+<div class="highlight"><pre><span></span><span class="n">PIK</span> <span class="o">=</span> <span class="s2">&quot;raw_data20k.pkl&quot;</span>
+
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">PIK</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">PIK</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Loading data&quot;</span><span class="p">)</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="c1"># Check for and remove &#39;cancelled&#39; claims</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span> <span class="k">if</span> <span class="s1">&#39;(canceled)&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+    <span class="n">cleaner_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">classification</span> <span class="o">=</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
+                <span class="n">cleaner_data</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">classification</span><span class="p">)</span>
+                <span class="p">)</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="n">cleaner_data</span>
+
+    <span class="kn">from</span> <span class="nn">patentdata.models.lib.utils</span> <span class="kn">import</span> <span class="n">clean_characters</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[(</span><span class="n">clean_characters</span><span class="p">(</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;raw_data20k.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Loading data
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="s2">&quot;We have {0} data samples left after cleaning.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>We have 17712 data samples left after cleaning.
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.utils</span> <span class="kn">import</span> <span class="n">to_categorical</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+
+<span class="n">Y_class</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+<span class="c1"># encode class values as integers</span>
+<span class="n">label_e</span> <span class="o">=</span> <span class="n">LabelEncoder</span><span class="p">()</span>
+<span class="n">label_e</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">Y_class</span><span class="p">)</span>
+<span class="n">encoded_Y</span> <span class="o">=</span> <span class="n">label_e</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">Y_class</span><span class="p">)</span>
+<span class="c1"># convert integers to dummy variables (i.e. one hot encoded)</span>
+<span class="n">Y</span> <span class="o">=</span> <span class="n">to_categorical</span><span class="p">(</span><span class="n">encoded_Y</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our classes are now a matrix of {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">))</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Original label: {0}; Converted label: {1}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">Y_class</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+<span class="kn">from</span> <span class="nn">keras.preprocessing.text</span> <span class="kn">import</span> <span class="n">Tokenizer</span>
+
+<span class="n">docs</span> <span class="o">=</span> <span class="p">[</span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">]</span>
+
+<span class="c1"># create the tokenizer</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="c1"># fit the tokenizer on the documents</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;tfidf&#39;</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our data has the following dimensionality: &quot;</span><span class="p">,</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;An example array is: &quot;</span><span class="p">,</span> <span class="n">X</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">:</span><span class="mi">100</span><span class="p">])</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="nt">Our</span> <span class="nt">classes</span> <span class="nt">are</span> <span class="nt">now</span> <span class="nt">a</span> <span class="nt">matrix</span> <span class="nt">of</span> <span class="o">(</span><span class="nt">17712</span><span class="o">,</span> <span class="nt">8</span><span class="o">)</span>
+<span class="nt">Original</span> <span class="nt">label</span><span class="o">:</span> <span class="nt">G</span><span class="o">;</span> <span class="nt">Converted</span> <span class="nt">label</span><span class="o">:</span> <span class="cp">[</span><span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span> <span class="mi">1</span><span class="nx">.</span> <span class="mi">0</span><span class="nx">.</span><span class="cp">]</span>
+<span class="nt">Our</span> <span class="nt">data</span> <span class="nt">has</span> <span class="nt">the</span> <span class="nt">following</span> <span class="nt">dimensionality</span><span class="o">:</span>  <span class="o">(</span><span class="nt">17712</span><span class="o">,</span> <span class="nt">5000</span><span class="o">)</span>
+<span class="nt">An</span> <span class="nt">example</span> <span class="nt">array</span> <span class="nt">is</span><span class="o">:</span>  <span class="cp">[</span><span class="mi">0</span><span class="nx">.</span>         <span class="mf">2.19509726</span> <span class="mf">1.66470012</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mf">1.21538639</span> <span class="mf">1.66504906</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mf">0.88406116</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">1.66670622</span> <span class="mf">0.69334485</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mf">0.75089151</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">1.47841041</span> <span class="mf">1.27422143</span>
+ <span class="mf">1.15174037</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mf">2.9039738</span>  <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mf">1.93181596</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">2.27206512</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mf">1.95791029</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">2.3501247</span>  <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">5.8289026</span>  <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mf">4.79273481</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">3.04409238</span> <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>
+ <span class="mi">0</span><span class="nx">.</span>         <span class="mi">0</span><span class="nx">.</span>         <span class="mf">2.44064762</span> <span class="mi">0</span><span class="nx">.</span>        <span class="cp">]</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;encoded_data20k.pkl&quot;</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">),</span> <span class="n">f</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">cross_val_score</span>
+<span class="kn">from</span> <span class="nn">sklearn.naive_bayes</span> <span class="kn">import</span> <span class="n">MultinomialNB</span>
+<span class="kn">from</span> <span class="nn">sklearn.neural_network</span> <span class="kn">import</span> <span class="n">MLPClassifier</span>
+
+<span class="n">classifiers</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">MultinomialNB</span><span class="p">(),</span>
+    <span class="n">MLPClassifier</span><span class="p">()</span>
+<span class="p">]</span>
+
+<span class="n">results</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="c1"># Convert one hot to target integer</span>
+<span class="n">Y_integers</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">clf</span> <span class="ow">in</span> <span class="n">classifiers</span><span class="p">:</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">clf</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
+    <span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">clf</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">((</span>
+        <span class="n">name</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+        <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+    <span class="p">))</span>
+
+    <span class="k">print</span><span class="p">(</span>
+        <span class="s2">&quot;Classifier {0} has an average classification accuracy of {1:.2f} ({2:.2f})&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">name</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span> 
+            <span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+        <span class="p">)</span>    
+    <span class="p">)</span>
+</pre></div>
+
+
+<p>Results:</p>
+<ul>
+<li>Classifier MultinomialNB has an average classification accuracy of 58.22 (0.34)</li>
+<li>Classifier MLPClassifier has an average classification accuracy of 62.38 (0.88)</li>
+</ul>
+<p>So possibly a very small improvement but well within the realms of statistical variance. Let us see if more data helps with our keras model.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Activation</span><span class="p">,</span> <span class="n">Dropout</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">input_dim</span> <span class="o">=</span> <span class="n">X</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our input dimension for our claim representation is {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">input_dim</span><span class="p">))</span>
+
+<span class="n">no_classes</span> <span class="o">=</span> <span class="n">Y</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">print</span><span class="p">(</span><span class="s2">&quot;Our output dimension is {0}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">no_classes</span><span class="p">))</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Our input dimension for our claim representation is 5000
+Our output dimension is 8
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">keras_model</span><span class="p">():</span>
+    <span class="c1"># create model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">no_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+    <span class="c1"># Compile model</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras_model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># list all data in history</span>
+<span class="k">print</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># summarize history for accuracy</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># summarize history for loss</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Our input dimension for our claim representation is 5000
+Our output dimension is 8
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_1 (Dense)              (None, 500)               2500500   
+_________________________________________________________________
+dense_2 (Dense)              (None, 8)                 4008      
+=================================================================
+Total params: 2,504,508
+Trainable params: 2,504,508
+Non-trainable params: 0
+_________________________________________________________________
+Train on 14169 samples, validate on 3543 samples
+Epoch 1/10
+14169/14169 [==============================] - 530s - loss: 1.1325 - acc: 0.6120 - val_loss: 1.0894 - val_acc: 0.6077
+Epoch 2/10
+14169/14169 [==============================] - 475s - loss: 0.3948 - acc: 0.8646 - val_loss: 1.4186 - val_acc: 0.6105
+Epoch 3/10
+14169/14169 [==============================] - 566s - loss: 0.1108 - acc: 0.9724 - val_loss: 1.9858 - val_acc: 0.6113
+Epoch 4/10
+14169/14169 [==============================] - 454s - loss: 0.0334 - acc: 0.9939 - val_loss: 2.3294 - val_acc: 0.6065
+Epoch 5/10
+14169/14169 [==============================] - 476s - loss: 0.0283 - acc: 0.9960 - val_loss: 2.5955 - val_acc: 0.6139
+Epoch 6/10
+14169/14169 [==============================] - 513s - loss: 0.0250 - acc: 0.9960 - val_loss: 2.8697 - val_acc: 0.6063
+Epoch 7/10
+14169/14169 [==============================] - 457s - loss: 0.0223 - acc: 0.9968 - val_loss: 3.2368 - val_acc: 0.5981
+Epoch 8/10
+14169/14169 [==============================] - 449s - loss: 0.0178 - acc: 0.9977 - val_loss: 3.3843 - val_acc: 0.5995
+Epoch 9/10
+14169/14169 [==============================] - 430s - loss: 0.0177 - acc: 0.9976 - val_loss: 3.4755 - val_acc: 0.6094
+Epoch 10/10
+14169/14169 [==============================] - 427s - loss: 0.0141 - acc: 0.9984 - val_loss: 3.5041 - val_acc: 0.6125
+dict_keys([&#39;val_loss&#39;, &#39;val_acc&#39;, &#39;loss&#39;, &#39;acc&#39;])
+</pre></div>
+
+
+<p><img alt="png" src="./images/4C_output_13_1.png"></p>
+<p><img alt="png" src="./images/4C_output_13_2.png"></p>
+<p>Our accuracy appears to have improved by 1-2%. This is still a small increase though, and possibly within the variance of our classifier. Let's try with regularisation, which had the best effect to prevent overfitting.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.regularizers</span> <span class="kn">import</span> <span class="n">l2</span> <span class="c1"># L2-regularisation</span>
+<span class="n">l2_lambda</span> <span class="o">=</span> <span class="mf">0.1</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">keras_reg_model</span><span class="p">():</span>
+    <span class="c1"># create model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">input_dim</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">no_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+    <span class="c1"># Compile model</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras_reg_model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># list all data in history</span>
+<span class="k">print</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># summarize history for accuracy</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># summarize history for loss</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dense_3 (Dense)              (None, 500)               2500500   
+_________________________________________________________________
+dense_4 (Dense)              (None, 8)                 4008      
+=================================================================
+Total params: 2,504,508
+Trainable params: 2,504,508
+Non-trainable params: 0
+_________________________________________________________________
+Train on 14169 samples, validate on 3543 samples
+Epoch 1/10
+14169/14169 [==============================] - 1109s - loss: 3.5127 - acc: 0.5249 - val_loss: 2.8284 - val_acc: 0.5174
+Epoch 2/10
+14169/14169 [==============================] - 911s - loss: 2.5778 - acc: 0.5597 - val_loss: 2.4618 - val_acc: 0.5577
+Epoch 3/10
+14169/14169 [==============================] - 905s - loss: 2.2790 - acc: 0.5762 - val_loss: 2.1673 - val_acc: 0.5555
+Epoch 4/10
+14169/14169 [==============================] - 930s - loss: 2.1328 - acc: 0.5876 - val_loss: 2.1349 - val_acc: 0.5642
+Epoch 5/10
+14169/14169 [==============================] - 943s - loss: 2.0365 - acc: 0.5944 - val_loss: 2.0831 - val_acc: 0.5795
+Epoch 6/10
+14169/14169 [==============================] - 943s - loss: 1.9580 - acc: 0.5982 - val_loss: 2.0456 - val_acc: 0.5687
+Epoch 7/10
+ 1285/14169 [=&gt;............................] - ETA: 866s - loss: 1.8422 - acc: 0.6661
+</pre></div>
+
+
+<p>Gvien our results so far - let's try a multilayer model with regularisation and aggressive dropout.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">keras_best_model</span><span class="p">():</span>
+    <span class="c1"># create model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">no_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+    <span class="c1"># Compile model</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras_best_model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># list all data in history</span>
+<span class="k">print</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># summarize history for accuracy</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># summarize history for loss</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dropout_3 (Dropout)          (None, 5000)              0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 1000)              5001000   
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 1000)              0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 500)               500500    
+_________________________________________________________________
+dropout_5 (Dropout)          (None, 500)               0         
+_________________________________________________________________
+dense_4 (Dense)              (None, 250)               125250    
+_________________________________________________________________
+dropout_6 (Dropout)          (None, 250)               0         
+_________________________________________________________________
+dense_5 (Dense)              (None, 8)                 2008      
+=================================================================
+Total params: 5,628,758
+Trainable params: 5,628,758
+Non-trainable params: 0
+_________________________________________________________________
+Train on 14169 samples, validate on 3543 samples
+Epoch 1/10
+14169/14169 [==============================] - 235s 17ms/step - loss: 4.1414 - acc: 0.3485 - val_loss: 2.2931 - val_acc: 0.3796
+Epoch 2/10
+14169/14169 [==============================] - 235s 17ms/step - loss: 2.3008 - acc: 0.3622 - val_loss: 2.2649 - val_acc: 0.3717
+Epoch 3/10
+14169/14169 [==============================] - 233s 16ms/step - loss: 2.2481 - acc: 0.3641 - val_loss: 2.1900 - val_acc: 0.3853
+Epoch 4/10
+14169/14169 [==============================] - 234s 17ms/step - loss: 2.2471 - acc: 0.3657 - val_loss: 2.1706 - val_acc: 0.3872
+Epoch 5/10
+14169/14169 [==============================] - 233s 16ms/step - loss: 2.2167 - acc: 0.3652 - val_loss: 2.1241 - val_acc: 0.3915
+Epoch 6/10
+14169/14169 [==============================] - 228s 16ms/step - loss: 2.1903 - acc: 0.3681 - val_loss: 2.1248 - val_acc: 0.3884
+Epoch 7/10
+14169/14169 [==============================] - 228s 16ms/step - loss: 2.1529 - acc: 0.3649 - val_loss: 2.0640 - val_acc: 0.3810
+Epoch 8/10
+14169/14169 [==============================] - 233s 16ms/step - loss: 2.1292 - acc: 0.3690 - val_loss: 2.0177 - val_acc: 0.3816
+Epoch 9/10
+14169/14169 [==============================] - 234s 17ms/step - loss: 2.1398 - acc: 0.3700 - val_loss: 2.0846 - val_acc: 0.3929
+Epoch 10/10
+14169/14169 [==============================] - 237s 17ms/step - loss: 2.1281 - acc: 0.3656 - val_loss: 2.0500 - val_acc: 0.3864
+dict_keys([&#39;val_loss&#39;, &#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;])
+</pre></div>
+
+
+<p><img alt="png" src="./images/4C_output_18_1.png"></p>
+<p><img alt="png" src="./images/4C_output_18_2.png"></p>
+<p>Maybe that's too aggressive on the regularisation...</p>
+<div class="highlight"><pre><span></span><span class="n">l2_lambda</span> <span class="o">=</span> <span class="mf">0.05</span>
+
+<span class="k">def</span> <span class="nf">keras_best_model</span><span class="p">():</span>
+    <span class="c1"># create model</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="n">input_shape</span><span class="o">=</span><span class="p">(</span><span class="n">input_dim</span><span class="p">,)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.2</span><span class="p">))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="mi">250</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;relu&#39;</span><span class="p">,</span> <span class="n">kernel_regularizer</span><span class="o">=</span><span class="n">l2</span><span class="p">(</span><span class="n">l2_lambda</span><span class="p">)))</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">no_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s1">&#39;softmax&#39;</span><span class="p">))</span>
+    <span class="c1"># Compile model</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="s1">&#39;categorical_crossentropy&#39;</span><span class="p">,</span> <span class="n">optimizer</span><span class="o">=</span><span class="s1">&#39;adam&#39;</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;accuracy&#39;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">keras_best_model</span><span class="p">()</span>
+<span class="n">model</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span>
+<span class="n">history</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="c1"># list all data in history</span>
+<span class="k">print</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+<span class="c1"># summarize history for accuracy</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_acc&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;accuracy&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="c1"># summarize history for loss</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">history</span><span class="o">.</span><span class="n">history</span><span class="p">[</span><span class="s1">&#39;val_loss&#39;</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;model loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;loss&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;epoch&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">([</span><span class="s1">&#39;train&#39;</span><span class="p">,</span> <span class="s1">&#39;test&#39;</span><span class="p">],</span> <span class="n">loc</span><span class="o">=</span><span class="s1">&#39;upper left&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+dropout_2 (Dropout)          (None, 5000)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 1000)              5001000   
+_________________________________________________________________
+dropout_3 (Dropout)          (None, 1000)              0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 500)               500500    
+_________________________________________________________________
+dropout_4 (Dropout)          (None, 500)               0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 250)               125250    
+_________________________________________________________________
+dense_4 (Dense)              (None, 8)                 2008      
+=================================================================
+Total params: 5,628,758
+Trainable params: 5,628,758
+Non-trainable params: 0
+_________________________________________________________________
+Train on 14169 samples, validate on 3543 samples
+Epoch 1/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 7.0981 - acc: 0.4782 - val_loss: 2.0088 - val_acc: 0.4773
+Epoch 2/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.9643 - acc: 0.5087 - val_loss: 2.0833 - val_acc: 0.4423
+Epoch 3/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.9313 - acc: 0.5189 - val_loss: 1.8856 - val_acc: 0.5095
+Epoch 4/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.8617 - acc: 0.5285 - val_loss: 1.7967 - val_acc: 0.5202
+Epoch 5/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.8270 - acc: 0.5317 - val_loss: 1.8067 - val_acc: 0.5264
+Epoch 6/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.8229 - acc: 0.5298 - val_loss: 1.7852 - val_acc: 0.5275
+Epoch 7/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.8020 - acc: 0.5363 - val_loss: 1.7479 - val_acc: 0.5278
+Epoch 8/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7970 - acc: 0.5411 - val_loss: 1.7326 - val_acc: 0.5413
+Epoch 9/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7868 - acc: 0.5490 - val_loss: 1.7972 - val_acc: 0.5405
+Epoch 10/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.8063 - acc: 0.5497 - val_loss: 1.7729 - val_acc: 0.5741
+Epoch 11/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7935 - acc: 0.5521 - val_loss: 1.7277 - val_acc: 0.5543
+Epoch 12/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7793 - acc: 0.5564 - val_loss: 1.7212 - val_acc: 0.5628
+Epoch 13/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7716 - acc: 0.5566 - val_loss: 1.7344 - val_acc: 0.5648
+Epoch 14/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.7912 - acc: 0.5646 - val_loss: 1.7609 - val_acc: 0.5459
+Epoch 15/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.8010 - acc: 0.5617 - val_loss: 1.7758 - val_acc: 0.5555
+Epoch 16/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7647 - acc: 0.5708 - val_loss: 1.7577 - val_acc: 0.5715
+Epoch 17/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7735 - acc: 0.5630 - val_loss: 1.7828 - val_acc: 0.5682
+Epoch 18/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7775 - acc: 0.5674 - val_loss: 1.6914 - val_acc: 0.5732
+Epoch 19/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7649 - acc: 0.5616 - val_loss: 1.7659 - val_acc: 0.5656
+Epoch 20/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7653 - acc: 0.5687 - val_loss: 1.7269 - val_acc: 0.5778
+Epoch 21/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7926 - acc: 0.5676 - val_loss: 1.7353 - val_acc: 0.5769
+Epoch 22/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.8137 - acc: 0.5681 - val_loss: 1.7812 - val_acc: 0.5964
+Epoch 23/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.8417 - acc: 0.5700 - val_loss: 1.8175 - val_acc: 0.5543
+Epoch 24/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7910 - acc: 0.5670 - val_loss: 1.7624 - val_acc: 0.5797
+Epoch 25/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7443 - acc: 0.5701 - val_loss: 1.7018 - val_acc: 0.5831
+Epoch 26/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7419 - acc: 0.5736 - val_loss: 1.7574 - val_acc: 0.5684
+Epoch 27/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7701 - acc: 0.5755 - val_loss: 1.7539 - val_acc: 0.5577
+Epoch 28/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.7878 - acc: 0.5751 - val_loss: 1.7290 - val_acc: 0.5800
+Epoch 29/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7429 - acc: 0.5757 - val_loss: 1.7327 - val_acc: 0.5580
+Epoch 30/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7342 - acc: 0.5731 - val_loss: 1.6896 - val_acc: 0.5704
+Epoch 31/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7455 - acc: 0.5782 - val_loss: 1.6768 - val_acc: 0.5766
+Epoch 32/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7320 - acc: 0.5803 - val_loss: 1.6411 - val_acc: 0.5857
+Epoch 33/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7088 - acc: 0.5726 - val_loss: 1.6477 - val_acc: 0.5834
+Epoch 34/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7210 - acc: 0.5770 - val_loss: 1.6664 - val_acc: 0.5865
+Epoch 35/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7339 - acc: 0.5729 - val_loss: 1.7065 - val_acc: 0.5676
+Epoch 36/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7247 - acc: 0.5785 - val_loss: 1.7183 - val_acc: 0.5588
+Epoch 37/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7036 - acc: 0.5799 - val_loss: 1.6512 - val_acc: 0.5854
+Epoch 38/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6881 - acc: 0.5803 - val_loss: 1.6607 - val_acc: 0.5845
+Epoch 39/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7112 - acc: 0.5810 - val_loss: 1.6761 - val_acc: 0.5848
+Epoch 40/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6935 - acc: 0.5814 - val_loss: 1.6509 - val_acc: 0.5786
+Epoch 41/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7031 - acc: 0.5799 - val_loss: 1.6444 - val_acc: 0.5899
+Epoch 42/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7041 - acc: 0.5804 - val_loss: 1.6987 - val_acc: 0.5634
+Epoch 43/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7034 - acc: 0.5814 - val_loss: 1.6882 - val_acc: 0.5634
+Epoch 44/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7188 - acc: 0.5779 - val_loss: 1.6513 - val_acc: 0.5834
+Epoch 45/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7077 - acc: 0.5858 - val_loss: 1.6546 - val_acc: 0.5840
+Epoch 46/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6948 - acc: 0.5810 - val_loss: 1.6565 - val_acc: 0.5871
+Epoch 47/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7149 - acc: 0.5813 - val_loss: 1.6405 - val_acc: 0.5871
+Epoch 48/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7212 - acc: 0.5800 - val_loss: 1.6631 - val_acc: 0.5916
+Epoch 49/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7177 - acc: 0.5796 - val_loss: 1.7004 - val_acc: 0.5651
+Epoch 50/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7114 - acc: 0.5935 - val_loss: 1.6883 - val_acc: 0.5851
+Epoch 51/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7091 - acc: 0.5857 - val_loss: 1.6943 - val_acc: 0.5862
+Epoch 52/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7038 - acc: 0.5813 - val_loss: 1.6542 - val_acc: 0.5786
+Epoch 53/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6978 - acc: 0.5801 - val_loss: 1.6885 - val_acc: 0.5879
+Epoch 54/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6972 - acc: 0.5819 - val_loss: 1.6577 - val_acc: 0.5882
+Epoch 55/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7050 - acc: 0.5849 - val_loss: 1.7277 - val_acc: 0.5831
+Epoch 56/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7031 - acc: 0.5805 - val_loss: 1.7176 - val_acc: 0.5721
+Epoch 57/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7122 - acc: 0.5868 - val_loss: 1.6822 - val_acc: 0.5803
+Epoch 58/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7076 - acc: 0.5828 - val_loss: 1.6530 - val_acc: 0.5913
+Epoch 59/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7101 - acc: 0.5854 - val_loss: 1.6495 - val_acc: 0.5958
+Epoch 60/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7016 - acc: 0.5859 - val_loss: 1.6875 - val_acc: 0.5713
+Epoch 61/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6959 - acc: 0.5856 - val_loss: 1.6289 - val_acc: 0.5902
+Epoch 62/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7089 - acc: 0.5776 - val_loss: 1.6507 - val_acc: 0.5865
+Epoch 63/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6848 - acc: 0.5888 - val_loss: 1.6731 - val_acc: 0.5806
+Epoch 64/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7119 - acc: 0.5858 - val_loss: 1.6694 - val_acc: 0.5766
+Epoch 65/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6897 - acc: 0.5854 - val_loss: 1.6580 - val_acc: 0.5865
+Epoch 66/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6992 - acc: 0.5888 - val_loss: 1.6523 - val_acc: 0.5978
+Epoch 67/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6826 - acc: 0.5907 - val_loss: 1.6565 - val_acc: 0.5936
+Epoch 68/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6951 - acc: 0.5906 - val_loss: 1.6434 - val_acc: 0.5955
+Epoch 69/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6809 - acc: 0.5805 - val_loss: 1.6181 - val_acc: 0.5975
+Epoch 70/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6979 - acc: 0.5865 - val_loss: 1.6729 - val_acc: 0.5893
+Epoch 71/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7019 - acc: 0.5798 - val_loss: 1.7150 - val_acc: 0.5828
+Epoch 72/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7150 - acc: 0.5833 - val_loss: 1.6496 - val_acc: 0.5763
+Epoch 73/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6969 - acc: 0.5875 - val_loss: 1.6987 - val_acc: 0.5735
+Epoch 74/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6980 - acc: 0.5814 - val_loss: 1.6555 - val_acc: 0.5933
+Epoch 75/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7002 - acc: 0.5819 - val_loss: 1.6448 - val_acc: 0.5961
+Epoch 76/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6834 - acc: 0.5914 - val_loss: 1.6705 - val_acc: 0.5780
+Epoch 77/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6908 - acc: 0.5857 - val_loss: 1.6920 - val_acc: 0.5651
+Epoch 78/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6909 - acc: 0.5868 - val_loss: 1.6839 - val_acc: 0.5783
+Epoch 79/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6903 - acc: 0.5878 - val_loss: 1.6548 - val_acc: 0.5927
+Epoch 80/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6785 - acc: 0.5889 - val_loss: 1.6671 - val_acc: 0.5848
+Epoch 81/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6960 - acc: 0.5869 - val_loss: 1.6657 - val_acc: 0.5930
+Epoch 82/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6973 - acc: 0.5847 - val_loss: 1.6991 - val_acc: 0.5696
+Epoch 83/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6832 - acc: 0.5844 - val_loss: 1.6917 - val_acc: 0.5874
+Epoch 84/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6950 - acc: 0.5916 - val_loss: 1.6861 - val_acc: 0.5617
+Epoch 85/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.6990 - acc: 0.5835 - val_loss: 1.6539 - val_acc: 0.6060
+Epoch 86/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7008 - acc: 0.5859 - val_loss: 1.6889 - val_acc: 0.5792
+Epoch 87/100
+14169/14169 [==============================] - 38s 3ms/step - loss: 1.7040 - acc: 0.5835 - val_loss: 1.6696 - val_acc: 0.5761
+Epoch 88/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.7172 - acc: 0.5854 - val_loss: 1.6428 - val_acc: 0.5780
+Epoch 89/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6942 - acc: 0.5915 - val_loss: 1.7047 - val_acc: 0.5899
+Epoch 90/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6908 - acc: 0.5909 - val_loss: 1.6569 - val_acc: 0.5792
+Epoch 91/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6987 - acc: 0.5936 - val_loss: 1.6810 - val_acc: 0.5857
+Epoch 92/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6976 - acc: 0.5903 - val_loss: 1.6755 - val_acc: 0.5859
+Epoch 93/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6924 - acc: 0.5928 - val_loss: 1.6425 - val_acc: 0.5938
+Epoch 94/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6905 - acc: 0.5991 - val_loss: 1.6878 - val_acc: 0.5848
+Epoch 95/100
+14169/14169 [==============================] - 39s 3ms/step - loss: 1.6966 - acc: 0.5911 - val_loss: 1.6959 - val_acc: 0.5769
+Epoch 96/100
+14169/14169 [==============================] - 41s 3ms/step - loss: 1.6853 - acc: 0.5943 - val_loss: 1.6480 - val_acc: 0.5927
+Epoch 97/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.6791 - acc: 0.5964 - val_loss: 1.6827 - val_acc: 0.5947
+Epoch 98/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.6903 - acc: 0.5854 - val_loss: 1.6791 - val_acc: 0.5916
+Epoch 99/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.7010 - acc: 0.5883 - val_loss: 1.6691 - val_acc: 0.6023
+Epoch 100/100
+14169/14169 [==============================] - 40s 3ms/step - loss: 1.7092 - acc: 0.5842 - val_loss: 1.6557 - val_acc: 0.5868
+dict_keys([&#39;val_loss&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_acc&#39;])
+</pre></div>
+
+
+<p><img alt="png" src="./images/4C_output_20_1.png"></p>
+<p><img alt="png" src="./images/4C_output_20_2.png"></p>
+<hr>
+<h2>Increasing Performance with Ensembles</h2>
+<p>How do each of our preferred machine learning algorithms build their models? If they each have different strengths and weaknesses we may be able to build an ensemble model that outperforms the individual performance.</p>
+<h3>Looking at the Confusion Matrix for Insights</h3>
+<p>Luckily scikit-learn provides a <a href="http://scikit-learn.org/stable/auto_examples/model_selection/plot_confusion_matrix.html">helpful example</a> that shows how to plot a confusion matrix. We will use this code below.</p>
+<div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">confusion_matrix</span>
+
+<span class="k">def</span> <span class="nf">plot_confusion_matrix</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span>
+                          <span class="n">normalize</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                          <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix&#39;</span><span class="p">,</span>
+                          <span class="n">cmap</span><span class="o">=</span><span class="n">plt</span><span class="o">.</span><span class="n">cm</span><span class="o">.</span><span class="n">Blues</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function prints and plots the confusion matrix.</span>
+<span class="sd">    Normalization can be applied by setting `normalize=True`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">normalize</span><span class="p">:</span>
+        <span class="n">cm</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span> <span class="o">/</span> <span class="n">cm</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Normalized confusion matrix&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Confusion matrix, without normalization&#39;</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">cm</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">cm</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+    <span class="n">tick_marks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">classes</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">,</span> <span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">yticks</span><span class="p">(</span><span class="n">tick_marks</span><span class="p">,</span> <span class="n">classes</span><span class="p">)</span>
+
+    <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;.2f&#39;</span> <span class="k">if</span> <span class="n">normalize</span> <span class="k">else</span> <span class="s1">&#39;d&#39;</span>
+    <span class="n">thresh</span> <span class="o">=</span> <span class="n">cm</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">/</span> <span class="mf">2.</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">range</span><span class="p">(</span><span class="n">cm</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">format</span><span class="p">(</span><span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span> <span class="n">fmt</span><span class="p">),</span>
+                 <span class="n">horizontalalignment</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">,</span>
+                 <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span> <span class="k">if</span> <span class="n">cm</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">thresh</span> <span class="k">else</span> <span class="s2">&quot;black&quot;</span><span class="p">)</span>
+
+    <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;True label&#39;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Predicted label&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># create the tokenizer</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">Tokenizer</span><span class="p">(</span><span class="n">num_words</span><span class="o">=</span><span class="mi">5000</span><span class="p">)</span>
+<span class="c1"># fit the tokenizer on the documents</span>
+<span class="n">t</span><span class="o">.</span><span class="n">fit_on_texts</span><span class="p">(</span><span class="n">docs</span><span class="p">)</span>
+
+<span class="n">X</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">texts_to_matrix</span><span class="p">(</span><span class="n">docs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;tfidf&quot;</span><span class="p">)</span>
+
+<span class="n">NBclf</span> <span class="o">=</span> <span class="n">MultinomialNB</span><span class="p">()</span>
+<span class="n">MLPclf</span> <span class="o">=</span> <span class="n">MLPClassifier</span><span class="p">()</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">NB_y_pred</span> <span class="o">=</span> <span class="n">NBclf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">MLP_y_pred</span> <span class="o">=</span> <span class="n">MLPclf</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Compute confusion matrix</span>
+<span class="n">NB_cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">NB_y_pred</span><span class="p">)</span>
+<span class="n">MLP_cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">MLP_y_pred</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">]</span>
+<span class="c1"># Plot non-normalized confusion matrix</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">NB_cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                      <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix for Naive Bayes, with normalization&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">MLP_cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                      <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix for MLP Classifier, with normalization&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Normalized confusion matrix
+[[0.34 0.14 0.22 0.01 0.11 0.07 0.1  0.01]
+ [0.02 0.52 0.11 0.03 0.09 0.13 0.07 0.03]
+ [0.08 0.1  0.73 0.   0.01 0.02 0.02 0.04]
+ [0.   0.   0.25 0.38 0.25 0.12 0.   0.  ]
+ [0.   0.14 0.07 0.02 0.62 0.09 0.05 0.02]
+ [0.01 0.12 0.02 0.01 0.08 0.69 0.05 0.03]
+ [0.01 0.06 0.04 0.   0.01 0.03 0.7  0.16]
+ [0.   0.07 0.05 0.01 0.02 0.05 0.23 0.58]]
+Normalized confusion matrix
+[[0.63 0.1  0.1  0.   0.   0.03 0.07 0.05]
+ [0.09 0.53 0.07 0.01 0.02 0.07 0.11 0.11]
+ [0.25 0.12 0.48 0.   0.01 0.01 0.04 0.08]
+ [0.25 0.25 0.25 0.   0.12 0.   0.   0.12]
+ [0.16 0.19 0.03 0.   0.38 0.12 0.07 0.05]
+ [0.12 0.17 0.01 0.   0.01 0.48 0.11 0.11]
+ [0.04 0.03 0.02 0.   0.   0.02 0.67 0.21]
+ [0.02 0.04 0.02 0.   0.   0.02 0.24 0.66]]
+</pre></div>
+
+
+<p><img alt="png" src="./images/4a_output_19_1.png"></p>
+<p><img alt="png" src="./images/4a_output_19_2.png"></p>
+<h4>Observations on the Confusion Matrix</h4>
+<p>The Naive Bayes classifier performs better than the MLP classifier for Sections C, D, E, F and G. The MLP classifier performs better for Sections A, B, and H. </p>
+<p>This suggests that an ensemble of both classifiers may work at improving performance. scikit-learn has a method to use both hard and soft voting <a href="http://scikit-learn.org/stable/modules/ensemble.html">here</a>.</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">sklearn.ensemble</span> <span class="kn">import</span> <span class="n">VotingClassifier</span>
+
+<span class="n">estimators</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">estimators</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;NB&#39;</span><span class="p">,</span> <span class="n">NBclf</span><span class="p">))</span>
+<span class="n">estimators</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="s1">&#39;MLP&#39;</span><span class="p">,</span> <span class="n">MLPclf</span><span class="p">))</span>
+<span class="c1"># create the ensemble model</span>
+<span class="n">ensemble</span> <span class="o">=</span> <span class="n">VotingClassifier</span><span class="p">(</span><span class="n">estimators</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">scores</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>array([0.61, 0.59, 0.6 , 0.6 , 0.6 ])
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">scores</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>59.89522060313159
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">scores</span><span class="o">.</span><span class="n">std</span><span class="p">()</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>0.7295624868552363
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="c1"># Trying soft voting</span>
+<span class="n">ensemble</span> <span class="o">=</span> <span class="n">VotingClassifier</span><span class="p">(</span><span class="n">estimators</span><span class="p">,</span> <span class="n">voting</span> <span class="o">=</span> <span class="s2">&quot;soft&quot;</span><span class="p">)</span>
+<span class="n">scores</span> <span class="o">=</span> <span class="n">cross_val_score</span><span class="p">(</span><span class="n">ensemble</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y_integers</span><span class="p">,</span> <span class="n">cv</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">scores</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>array([0.61, 0.59, 0.6 , 0.6 , 0.6 ])
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">EN_y_pred</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+
+<span class="c1"># Compute confusion matrix</span>
+<span class="n">EN_cnf_matrix</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span> <span class="n">EN_y_pred</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">precision</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">class_names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;A&#39;</span><span class="p">,</span> <span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span> <span class="s1">&#39;D&#39;</span><span class="p">,</span> <span class="s1">&#39;E&#39;</span><span class="p">,</span> <span class="s1">&#39;F&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">,</span> <span class="s1">&#39;H&#39;</span><span class="p">]</span>
+<span class="c1"># Plot non-normalized confusion matrix</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="n">plot_confusion_matrix</span><span class="p">(</span><span class="n">EN_cnf_matrix</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">class_names</span><span class="p">,</span> <span class="n">normalize</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                      <span class="n">title</span><span class="o">=</span><span class="s1">&#39;Confusion matrix for Ensemble Classifier, with normalization&#39;</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span>Normalized confusion matrix
+[[0.37 0.14 0.21 0.01 0.09 0.07 0.1  0.02]
+ [0.02 0.52 0.11 0.02 0.09 0.12 0.07 0.04]
+ [0.08 0.1  0.73 0.   0.01 0.01 0.02 0.04]
+ [0.   0.   0.25 0.38 0.25 0.12 0.   0.  ]
+ [0.   0.16 0.07 0.02 0.6  0.09 0.05 0.02]
+ [0.02 0.12 0.02 0.01 0.07 0.68 0.06 0.04]
+ [0.01 0.06 0.04 0.   0.01 0.02 0.7  0.16]
+ [0.   0.06 0.04 0.   0.01 0.05 0.23 0.6 ]]
+</pre></div>
+
+
+<p><img alt="png" src="./images/4a_output_27_2.png"></p>
     </div>
     <hr/>
     <footer>
       <ul class="list-inline">
-        <li class="list-inline-item text-muted" title="2018-03-22T20:03:21.442229+00:00">
+        <li class="list-inline-item text-muted" title="2018-03-23T10:19:19.216717+00:00">
           <i class="fa fa-clock-o"></i>
-          Thu 22 March 2018
+          Fri 23 March 2018
         </li>
         <li class="list-inline-item">
           <i class="fa fa-folder-open-o"></i>
