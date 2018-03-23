@@ -8,15 +8,18 @@
 
   <title>  4. Classifying Claims - Improving Results | Machine Learning Projects
 </title>
-  <link rel="canonical" href="./part-4-classifying-claims-improving-results.html">
+  <link rel="canonical" href="http://benhoyle.github.io/part-4-classifying-claims-improving-results.html">
 
 
-  <link rel="stylesheet" href="./theme/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./theme/css/font-awesome.min.css">
-  <link rel="stylesheet" href="./theme/css/pygments/default.min.css">
-  <link rel="stylesheet" href="./theme/css/theme.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/theme.css">
 
-  
+  <link rel="alternate" type="application/atom+xml" title="Full Atom Feed"
+        href="http://benhoyle.github.io/feeds/all.atom.xml">
+  <link rel="alternate" type="application/atom+xml" title="Categories Atom Feed"
+        href="http://benhoyle.github.io/feeds/claim-classification.atom.xml">  
   <meta name="description" content="This post looks at how we can improve our initial results.">
 
 
@@ -27,7 +30,7 @@
     <div class="container">
 <div class="row">
   <div class="col-sm-12">
-    <h1 class="title"><a href="./">Machine Learning Projects</a></h1>
+    <h1 class="title"><a href="http://benhoyle.github.io/">Machine Learning Projects</a></h1>
       <p class="text-muted">A selection of machine learning projects</p>
   </div>
 </div>    </div>
@@ -196,8 +199,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_11_1.png"></p>
-<p><img alt="png" src="./images/output_11_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_11_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_11_2.png"></p>
 <h3>Overfitting</h3>
 <p>Looking at this first set of results we can see that our neural network quickly overfits the data, while the test performance stays reasonably constant.  </p>
 <p>One way to reduce overfitting is to <a href="https://machinelearningmastery.com/dropout-regularization-deep-learning-models-keras/">apply Dropout</a>. Let's try that now.</p>
@@ -279,8 +282,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_13_1.png"></p>
-<p><img alt="png" src="./images/output_13_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_13_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_13_2.png"></p>
 <p>Now let's try with a more aggressive level of Dropout.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dropout</span>
 
@@ -360,8 +363,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_15_1.png"></p>
-<p><img alt="png" src="./images/output_15_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_15_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_15_2.png"></p>
 <p>This seems to work a little bit better - but there is about 2-3% variance so it is difficult to tell. Maybe we can try to train for a number of additional epochs.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Dropout</span>
 
@@ -461,8 +464,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_17_1.png"></p>
-<p><img alt="png" src="./images/output_17_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_17_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_17_2.png"></p>
 <p>Okay so Dropout doesn't appear to improve our performance. Overfitting still occurs over time and the test accuracy appears stubbornly fixed at around 60-62%.</p>
 <hr>
 <h2>Improving Performance with Algorithm Tuning</h2>
@@ -543,8 +546,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_20_1.png"></p>
-<p><img alt="png" src="./images/output_20_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_20_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_20_2.png"></p>
 <h3>Regularisation</h3>
 <p>One method of attempting to avoid overfitting is to limit the magnitude of our weights using regularisation. This is explained in this <a href="https://cambridgespark.com/content/tutorials/neural-networks-tuning-techniques/index.html">post</a>.  </p>
 <p>Here we will try L2 regularisation, which penalises large weight values.</p>
@@ -623,8 +626,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_23_1.png"></p>
-<p><img alt="png" src="./images/output_23_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_23_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_23_2.png"></p>
 <p>Regularisation appears to work here. While it doesn't affect accuracy, we do now have the loss for both the train and test sets decreasing over time.</p>
 <hr>
 <h2>Increasing Performance with Data</h2>
@@ -735,8 +738,8 @@ dict_keys([&#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/output_32_1.png"></p>
-<p><img alt="png" src="./images/output_32_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_32_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_32_2.png"></p>
 <p>Normalising our data does not seem to have any significant effect. This is to be expected - our data is already normalised to a certain extent, and we are dealing with sparse language data rather than continuous image data. </p>
 <p>This processing does appear to help slightly to reduce overfitting. This maybe suggests that regularisation may be useful.</p>
 <h3>Changing Input Dimensionality</h3>
@@ -1284,8 +1287,8 @@ dict_keys([&#39;val_loss&#39;, &#39;val_acc&#39;, &#39;loss&#39;, &#39;acc&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/4C_output_13_1.png"></p>
-<p><img alt="png" src="./images/4C_output_13_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_13_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_13_2.png"></p>
 <p>Our accuracy appears to have improved by 1-2%. This is still a small increase though, and possibly within the variance of our classifier. Let's try with regularisation, which had the best effect to prevent overfitting.</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">keras.regularizers</span> <span class="kn">import</span> <span class="n">l2</span> <span class="c1"># L2-regularisation</span>
 <span class="n">l2_lambda</span> <span class="o">=</span> <span class="mf">0.1</span>
@@ -1444,8 +1447,8 @@ dict_keys([&#39;val_loss&#39;, &#39;val_acc&#39;, &#39;acc&#39;, &#39;loss&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/4C_output_18_1.png"></p>
-<p><img alt="png" src="./images/4C_output_18_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_18_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_18_2.png"></p>
 <p>Maybe that's too aggressive on the regularisation...</p>
 <div class="highlight"><pre><span></span><span class="n">l2_lambda</span> <span class="o">=</span> <span class="mf">0.05</span>
 
@@ -1714,8 +1717,8 @@ dict_keys([&#39;val_loss&#39;, &#39;acc&#39;, &#39;loss&#39;, &#39;val_acc&#39;]
 </pre></div>
 
 
-<p><img alt="png" src="./images/4C_output_20_1.png"></p>
-<p><img alt="png" src="./images/4C_output_20_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_20_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_20_2.png"></p>
 <hr>
 <h2>Increasing Performance with Ensembles</h2>
 <p>How do each of our preferred machine learning algorithms build their models? If they each have different strengths and weaknesses we may be able to build an ensemble model that outperforms the individual performance.</p>
@@ -1819,8 +1822,8 @@ Normalized confusion matrix
 </pre></div>
 
 
-<p><img alt="png" src="./images/4a_output_19_1.png"></p>
-<p><img alt="png" src="./images/4a_output_19_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4a_output_19_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4a_output_19_2.png"></p>
 <h4>Observations on the Confusion Matrix</h4>
 <p>The Naive Bayes classifier performs better than the MLP classifier for Sections C, D, E, F and G. The MLP classifier performs better for Sections A, B, and H. </p>
 <p>This suggests that an ensemble of both classifiers may work at improving performance. scikit-learn has a method to use both hard and soft voting <a href="http://scikit-learn.org/stable/modules/ensemble.html">here</a>.</p>
@@ -1901,7 +1904,7 @@ Normalized confusion matrix
 </pre></div>
 
 
-<p><img alt="png" src="./images/4a_output_27_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4a_output_27_2.png"></p>
     </div>
     <hr/>
     <footer>
@@ -1912,14 +1915,14 @@ Normalized confusion matrix
         </li>
         <li class="list-inline-item">
           <i class="fa fa-folder-open-o"></i>
-          <a href="./category/claim-classification.html">Claim Classification</a>
+          <a href="http://benhoyle.github.io/category/claim-classification.html">Claim Classification</a>
         </li>
           <li class="list-inline-item">
             <i class="fa fa-user-o"></i>
-              <a href="./author/ben-hoyle.html">Ben Hoyle</a>          </li>
+              <a href="http://benhoyle.github.io/author/ben-hoyle.html">Ben Hoyle</a>          </li>
           <li class="list-inline-item">
             <i class="fa fa-files-o"></i>
-              <a href="./tag/improving_results.html">#improving_results</a>          </li>
+              <a href="http://benhoyle.github.io/tag/improving_results.html">#improving_results</a>          </li>
       </ul>
     </footer>
   </article>

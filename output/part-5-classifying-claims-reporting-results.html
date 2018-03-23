@@ -8,15 +8,18 @@
 
   <title>  5. Classifying Claims - Reporting Results | Machine Learning Projects
 </title>
-  <link rel="canonical" href="./part-5-classifying-claims-reporting-results.html">
+  <link rel="canonical" href="http://benhoyle.github.io/part-5-classifying-claims-reporting-results.html">
 
 
-  <link rel="stylesheet" href="./theme/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./theme/css/font-awesome.min.css">
-  <link rel="stylesheet" href="./theme/css/pygments/default.min.css">
-  <link rel="stylesheet" href="./theme/css/theme.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/theme.css">
 
-  
+  <link rel="alternate" type="application/atom+xml" title="Full Atom Feed"
+        href="http://benhoyle.github.io/feeds/all.atom.xml">
+  <link rel="alternate" type="application/atom+xml" title="Categories Atom Feed"
+        href="http://benhoyle.github.io/feeds/claim-classification.atom.xml">  
   <meta name="description" content="This post looks at our results and what we have learnt from the project.">
 
 
@@ -27,7 +30,7 @@
     <div class="container">
 <div class="row">
   <div class="col-sm-12">
-    <h1 class="title"><a href="./">Machine Learning Projects</a></h1>
+    <h1 class="title"><a href="http://benhoyle.github.io/">Machine Learning Projects</a></h1>
       <p class="text-muted">A selection of machine learning projects</p>
   </div>
 </div>    </div>
@@ -140,12 +143,12 @@
 <p>However, the training time for the non-linear SVM in scikit-learn (based on libsvm) is very long, much longer than either the MLP or the Naive Bayes classifier. The Naive Bayes classifier is one of the quickest, taking only a few seconds, compared to tens of minutes for the MLP and up to an hour for the SVM. </p>
 <h4>Comparing Predictions</h4>
 <p>It was interesting to compare how our Naive Bayes and MLP classifiers were predicting categories.</p>
-<p><img alt="png" src="./images/4a_output_19_1.png"> <img alt="png" src="./images/4a_output_19_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4a_output_19_1.png"> <img alt="png" src="http://benhoyle.github.io/images/4a_output_19_2.png"></p>
 <p>The Naive Bayes classifier struggled on class A - often confusing it with class C. However, it out-performs the MLP classifier on classes C, E, F and G -  a majority of the classes.</p>
 <p>The MLP classifier obtains a higher classification accuracy by outperforming on classes A and H. Indeed it looks like the misclassification of class A by the Naive Bayes classifier was the main reason for it having an overal accuracy below the MLP.</p>
 <p>This is one reason why the Naives Bayes classifier may actually be better in production despite having a headline accuracy below the MLP.</p>
 <p>It was disappointing to see that an ensemble classifier did not seem to capitalise on the relative strengths of both classifiers, at least in terms of overall classification accuracy.  </p>
-<p><img alt="png" src="./images/4a_output_27_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4a_output_27_2.png"></p>
 <p>The Naive Bayes brings down the performance of the ensemble classifier for classes A and H, despite increasing the accuracy for the other classes. This suggests that the Naive Bayes classifiers may be assigning fairly high incorrect probabilities for classes A and H, such that a hard or soft vote still goes with the missclassification.</p>
 <p>Ensemble classifiers appear a fruitful area for further investigation. For example, it may be that be adjusting the weightings of the ensemble we can avoid the degnerative performance for classes A and H.</p>
 <h3>4.3 Findings regarding specific algorithms</h3>
@@ -153,11 +156,11 @@
 <h4>Overfitting</h4>
 <p>A key finding in this project was the importance of regularisation to avoid overfitting.</p>
 <p>Our simple one layer neural network suffered greatly from overfitting on the data.</p>
-<p><img alt="png" src="./images/output_11_1.png"> <img alt="png" src="./images/output_11_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/output_11_1.png"> <img alt="png" src="http://benhoyle.github.io/images/output_11_2.png"></p>
 <p>As can be seen in these graphs, within a few epochs our network has a near 100% accuracy as it learns to overfit on the supplied data. Considering that we have 10,000 data samples and, due to the high dimensionality input, our model has 2.5 million parameters, it is easy to see how overfitting could occur - i.e. there are many more parameters than samples so our network can simply learn to memorise each sample. </p>
 <p>Overfitting leads to poor performance on validation datasets, i.e. data that is not used to train the neural network. This is most visible in the graph of model loss: while model loss reduces during training for the training data it <em>increases</em> for the test data set, i.e. we perform worse on our test data as our model overfits on our training data.</p>
 <p>Two techniques are recommended for overfitting: Dropout and Regularisation. In our case it turned out that Regularisation was more effective, and that a combination of moderate amounts of both Dropout and Regularisation acted to align training and test performance. For example L2 regularisation with a lambda value of 0.05 and Dropout between layers of around 0.2-0.25 worked well.</p>
-<p><img alt="png" src="./images/4C_output_20_1.png"> <img alt="png" src="./images/4C_output_20_2.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/4C_output_20_1.png"> <img alt="png" src="http://benhoyle.github.io/images/4C_output_20_2.png"></p>
 <p>However, even in this case, performance quickly saturates and additional trainings does not do much to increase our accuracy or reduce our loss. </p>
 <p>This is consistent with our other results - it suggests that there are certain easily discernable rules for work for 60-80% of class classifications, but that beyond that there are no absolute rules and that certain claims cannot be predictable assigned a class. </p>
 <h4>Architectures</h4>
@@ -191,14 +194,14 @@
         </li>
         <li class="list-inline-item">
           <i class="fa fa-folder-open-o"></i>
-          <a href="./category/claim-classification.html">Claim Classification</a>
+          <a href="http://benhoyle.github.io/category/claim-classification.html">Claim Classification</a>
         </li>
           <li class="list-inline-item">
             <i class="fa fa-user-o"></i>
-              <a href="./author/ben-hoyle.html">Ben Hoyle</a>          </li>
+              <a href="http://benhoyle.github.io/author/ben-hoyle.html">Ben Hoyle</a>          </li>
           <li class="list-inline-item">
             <i class="fa fa-files-o"></i>
-              <a href="./tag/reporting_results.html">#reporting_results</a>          </li>
+              <a href="http://benhoyle.github.io/tag/reporting_results.html">#reporting_results</a>          </li>
       </ul>
     </footer>
   </article>

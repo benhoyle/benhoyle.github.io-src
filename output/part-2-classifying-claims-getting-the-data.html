@@ -8,15 +8,18 @@
 
   <title>  2. Classifying Claims - Preparing the Data | Machine Learning Projects
 </title>
-  <link rel="canonical" href="./part-2-classifying-claims-getting-the-data.html">
+  <link rel="canonical" href="http://benhoyle.github.io/part-2-classifying-claims-getting-the-data.html">
 
 
-  <link rel="stylesheet" href="./theme/css/bootstrap.min.css">
-  <link rel="stylesheet" href="./theme/css/font-awesome.min.css">
-  <link rel="stylesheet" href="./theme/css/pygments/default.min.css">
-  <link rel="stylesheet" href="./theme/css/theme.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/bootstrap.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/font-awesome.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/pygments/default.min.css">
+  <link rel="stylesheet" href="http://benhoyle.github.io/theme/css/theme.css">
 
-  
+  <link rel="alternate" type="application/atom+xml" title="Full Atom Feed"
+        href="http://benhoyle.github.io/feeds/all.atom.xml">
+  <link rel="alternate" type="application/atom+xml" title="Categories Atom Feed"
+        href="http://benhoyle.github.io/feeds/claim-classification.atom.xml">  
   <meta name="description" content="This post looks at how we prepare the data for our claim classification example.">
 
 
@@ -27,7 +30,7 @@
     <div class="container">
 <div class="row">
   <div class="col-sm-12">
-    <h1 class="title"><a href="./">Machine Learning Projects</a></h1>
+    <h1 class="title"><a href="http://benhoyle.github.io/">Machine Learning Projects</a></h1>
       <p class="text-muted">A selection of machine learning projects</p>
   </div>
 </div>    </div>
@@ -244,7 +247,7 @@ Once we have the patent publications, we need to extract the text for claim 1 an
 </pre></div>
 
 
-<p><img alt="png" src="./images/2_output_23_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/2_output_23_1.png"></p>
 <p>As we can see the 6134 length claim is a clear outlier. The distribution is focused around 0 to around 600 words. Let's zoom in on that.</p>
 <div class="highlight"><pre><span></span><span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">600</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">claim_length_counter</span><span class="o">.</span><span class="n">elements</span><span class="p">()),</span> <span class="n">bins</span><span class="p">)</span>
@@ -258,7 +261,7 @@ Once we have the patent publications, we need to extract the text for claim 1 an
 </pre></div>
 
 
-<p><img alt="png" src="./images/2_output_25_1.png"></p>
+<p><img alt="png" src="http://benhoyle.github.io/images/2_output_25_1.png"></p>
 <p>When applying deep learning algorithms we often need to set a maximum sequence length. When dealing with words, this is equal to the maximum number of words expected in a claim. A lower maximum sequence length will help reduce our training time. </p>
 <p>If we take all claims of less than 250 words this would still include most of the data.  </p>
 <h4>Words</h4>
@@ -401,14 +404,14 @@ An example array is:  [ 0.          0.          2.43021996  2.08331543  1.715706
         </li>
         <li class="list-inline-item">
           <i class="fa fa-folder-open-o"></i>
-          <a href="./category/claim-classification.html">Claim Classification</a>
+          <a href="http://benhoyle.github.io/category/claim-classification.html">Claim Classification</a>
         </li>
           <li class="list-inline-item">
             <i class="fa fa-user-o"></i>
-              <a href="./author/ben-hoyle.html">Ben Hoyle</a>          </li>
+              <a href="http://benhoyle.github.io/author/ben-hoyle.html">Ben Hoyle</a>          </li>
           <li class="list-inline-item">
             <i class="fa fa-files-o"></i>
-              <a href="./tag/preparing_data.html">#preparing_data</a>          </li>
+              <a href="http://benhoyle.github.io/tag/preparing_data.html">#preparing_data</a>          </li>
       </ul>
     </footer>
   </article>
