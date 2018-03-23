@@ -1,6 +1,3 @@
-[submodule "output"]
-	path = output
-	url = git@github.com:benhoyle/benhoyle.github.io.git
 [submodule "pelican-themes/pelican-alchemy"]
 	path = pelican-themes/pelican-alchemy
 	url = git@github.com:benhoyle/pelican-alchemy.git
