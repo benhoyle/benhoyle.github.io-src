@@ -1,9 +1,9 @@
-Title: Title Generation - Defining the Problem
+Title: 1. Title Generation - Defining the Problem
 Tags: defining_the_problem
 Authors: Ben Hoyle
 Summary: This post looks at how we define the problem of title generation.
 
-# 1. Classifying Claims - Defining the Problem
+# 1. Title Generation - Defining the Problem
 
 This post looks at how we define the problem of title generation.  
 
@@ -25,9 +25,9 @@ A computer program is said to learn from experience E with respect to some class
 
 Here:
 
-    T = generate a title.
-    E = a corpus of US Patent Publications that include title and claim text.
-    P = more difficult - let's look at this in more detail below. 
+- T = generate a title.
+- E = a corpus of US Patent Publications that include title and claim text.
+- P = more difficult - let's look at this in more detail below. 
 
 
 Classification problems have a simple performance measure: classification accuracy. Here we are trying to generate a string of text, and we have a "ground truth" or original string of text to compare it too. 
@@ -44,12 +44,9 @@ The ideal performance measure would be a human score of the generated sentence i
 
 Below are some assumptions that may apply to the problem.
 
-    We assume the content of a patent application may be represented by its first independent claim.
-
-    It is an open question as to whether we could get better results using the full text of the detailed description.
-    However, the first claim of an application gives us a more manageable set of text to work with.
-
-    We assume that there are some underlying patterns to title formation that can be learnt by a machine learning model.
+- We assume the content of a patent application may be represented by its first independent claim.
+- It is an open question as to whether we could get better results using the full text of the detailed description. However, the first claim of an application gives us a more manageable set of text to work with.
+- We assume that there are some underlying patterns to title formation that can be learnt by a machine learning model.
 
 
 ---
@@ -101,6 +98,8 @@ As the title is short this has limited benefit for reducing drafting time. Howev
 I will write up my results in a blog post report. There will be a separate blog post for each stage in my investigation and a summary page reporting my results.
 
 The code from the solution may be used in my patentdata project, for example, claim-to-title conversion may be added to patentdata functionality. This could be implemented as a "title()" method on a Claim object. 
+
+---
 
 # How Would I Solve the Problem?
 
