@@ -109,7 +109,7 @@ From an inspection of the data, there is some preprocessing to be performed:
 - we need to convert the list of string classifications to just a Section letter; and
 - sometimes we have strange or non-standard character encodings that can screw up our text processing, the character encodings can thus be cleaned and any non-standard characters replaced.
 
-### Removing Cancelled Claimes
+### Removing Cancelled Claims
 
 The following codes removes claims that are cancelled (these just have "(canceled)" as text).
 

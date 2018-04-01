@@ -1,0 +1,21 @@
+# Values for the environment variables set out below should be put in a separate .env file
+# e.g. PLAYGROUNDPATH=/home/user1/myfolder
+
+version: '2'
+
+services:
+  ml_playground:
+    image: ml_playground
+    command: >
+      jupyter notebook --no-browser --allow-root
+    volumes:
+      - ${PLAYGROUNDPATH}:/playground_data
+    ports:
+      - '8888:8888'
+    links:
+      - mongodb
+
+  mongodb:
+    image: mongo
+    volumes:
+      - ${MONGOPATH}:/data

@@ -10,3 +10,4 @@ pelican-plugins
 *.swp
 *.out
 *.py[cod]
+.env
