@@ -11,3 +11,9 @@ pelican-plugins
 *.out
 *.py[cod]
 .env
+
+# Jupyter Checkpoints
+*checkpoint.ipynb
+
+# Keras weights
+*.hdf5
