@@ -21,3 +21,4 @@ pelican-plugins
 
 # Large files
 *50k.data
+*parsed_data*.pkl
