@@ -18,3 +18,6 @@ pelican-plugins
 
 # Keras weights
 *.hdf5
+
+# Large files
+*50k.data
