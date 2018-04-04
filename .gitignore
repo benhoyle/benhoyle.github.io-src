@@ -14,6 +14,7 @@ pelican-plugins
 
 # Jupyter Checkpoints
 *checkpoint.ipynb
+*./ipynb_checkpoints/*
 
 # Keras weights
 *.hdf5
