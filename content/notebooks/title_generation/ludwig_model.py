@@ -1,7 +1,10 @@
 from base_seq2seq import BaseSeq2Seq
 import numpy as np
 from keras.preprocessing import text
-
+from keras.models import Model
+from keras.layers import Input, LSTM, Dense, Embedding
+from keras.layers import concatenate
+import os
 
 class LudwigModel(BaseSeq2Seq):
     
@@ -99,7 +102,63 @@ class LudwigModel(BaseSeq2Seq):
         """ Checks to run when initialising. """
         pass
         
+    def _load_shared_embedding(self):
+        """ Load Glove embeddings. """
+        print("Loading GloVe 100d embeddings from file")
+        GLOVE_DIR = "glove/"
+
+        embeddings_index = {}
+        # For Python 3 tweaked to add 'rb'
+        f = open(os.path.join(GLOVE_DIR, 'glove.6B.100d.txt'), 'rb')
+        for line in f:
+            values = line.split()
+            # Tweaked to decode the binary text values
+            word = values[0].decode('utf-8')
+            coefs = np.asarray(values[1:], dtype='float32')
+            embeddings_index[word] = coefs
+        f.close()
+        self.word_embedding_size = 100 # As we are using the Glove 100d data
+        print('Found {0} word vectors.'.format(len(embeddings_index)))
+        self.embedding_matrix = np.zeros((self.num_encoder_tokens, self.word_embedding_size))
+        
+        # Filter our vocab to only the used items
+        words = [
+            (w, i) for w, i in self.input_dictionary.items() 
+            if int(i) < self.num_encoder_tokens
+            ]
+        
+        # This is from https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras/      
+        print("Building embedding matrix")
+        for word, i in words:
+            embedding_vector = embeddings_index.get(word)
+            if embedding_vector is not None:
+                self.embedding_matrix[i] = embedding_vector
+        
+        
     def _build_model(self):
         """ Build the model. """
-        pass
+        print("Building model")
+        self._load_shared_embedding()
+        # source text input model
+        inputs1 = Input(shape=(self.encoder_seq_length,))
+        #am1 = Embedding(X_vocab_len, 128)(inputs1)
+        Shared_Embedding = Embedding(
+            output_dim=self.word_embedding_size, 
+            input_dim=self.num_encoder_tokens,
+            weights=[self.embedding_matrix], 
+            input_length=self.encoder_seq_length
+        )
+        am1 = Shared_Embedding(inputs1)
+        am2 = LSTM(self.latent_dim)(am1)
+        # summary input model
+        inputs2 = Input(shape=(self.decoder_seq_length,))
+        sm1 = Shared_Embedding(inputs2)
+        sm2 = LSTM(self.latent_dim)(sm1)
+        # decoder output model
+        decoder1 = concatenate([am2, sm2])
+        outputs = Dense(self.num_decoder_tokens, activation='softmax')(decoder1)
+        # tie it together [article, summary] [word]
+        self.model = Model(inputs=[inputs1, inputs2], outputs=outputs)
+        print("Compiling model")
+        self.model.compile(loss='categorical_crossentropy', optimizer='adam')
     

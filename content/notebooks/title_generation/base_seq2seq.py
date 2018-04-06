@@ -21,7 +21,8 @@ class BaseSeq2Seq(AbstractModelWrapper):
         num_decoder_tokens=None,
         latent_dim=300,
         weights_file=None,
-        training_set_size=250  # Due to memory issues we need to train in sets
+        training_set_size=250,  # Due to memory issues we need to train in sets
+        batch_size=32
     ):
         # If encoder / decoder seq_length = none we can set based on data
         self.encoder_seq_length = encoder_seq_length
@@ -30,6 +31,8 @@ class BaseSeq2Seq(AbstractModelWrapper):
         self.num_encoder_tokens = num_encoder_tokens
         self.num_decoder_tokens = num_decoder_tokens
         self.latent_dim = latent_dim
+        self.training_set_size = training_set_size
+        self.batch_size=batch_size
         # If passed with init process texts
         self.input_tokenizer = None
         self.output_tokenizer = None
@@ -43,6 +46,7 @@ class BaseSeq2Seq(AbstractModelWrapper):
             self._load_weights(weights_file)
         else:
             self.weights_file = "weights.hdf5"
+        self._reset_metrics()
     
     # These are the exposed methods (to keep things simple)
     def load_text_data(self, encoder_texts, decoder_texts):
@@ -89,8 +93,9 @@ class BaseSeq2Seq(AbstractModelWrapper):
         """ Train in batches on all data with validation. """
         if reset_metrics:
             self._reset_metrics()
-        for e in epochs:
+        for e in range(0, epochs+1):
             print("Training for epoch {0}".format(e))
+            self._train_epoch()
             self.example_output(5)
         self.plot_loss()
     
@@ -229,7 +234,7 @@ class BaseSeq2Seq(AbstractModelWrapper):
         num_test_examples = len(self.input_test_data)
     
         # Loop here to avoid memory issues with the target one hot vector
-        for i in range(0, num__train_examples, self.training_set_size):
+        for i in range(0, num_train_examples, self.training_set_size):
             if i + self.training_set_size >= num_train_examples:
                 i_end = num_train_examples
             else:
