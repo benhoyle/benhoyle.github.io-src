@@ -2,6 +2,7 @@ from base_seq2seq import BaseSeq2Seq
 import numpy as np
 from keras.preprocessing import text
 
+
 class LudwigModel(BaseSeq2Seq):
     
     # I think we can reuse some of this?
@@ -78,7 +79,7 @@ class LudwigModel(BaseSeq2Seq):
             np.take(Y_set, indices, axis=0, out=Y_set)
         return ([I_1, I_2], Y_set)
         
-    def _generate_tokenizers():
+    def _generate_tokenizers(self):
         """ Generate tokenizers for data. """
         # This model uses a shared tokenizer for both input/output
         if self.num_encoder_tokens != self.num_decoder_tokens:
@@ -91,7 +92,7 @@ class LudwigModel(BaseSeq2Seq):
                 char_level=False,
                 oov_token="<UNK>"
         )
-        self.input_tokenizer.fit_on_texts(self.input_data + self.output_data)
+        self.input_tokenizer.fit_on_texts(self.encoder_texts + self.decoder_texts)
         self.output_tokenizer = self.input_tokenizer
         
     def _start_checks(self):

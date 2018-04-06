@@ -7,6 +7,7 @@ import math
 
 from abstract_model_wrapper import AbstractModelWrapper
 
+
 class BaseSeq2Seq(AbstractModelWrapper):
     """ Abstract class for sequence to sequence models for mixing in. """
     
@@ -17,13 +18,11 @@ class BaseSeq2Seq(AbstractModelWrapper):
         encoder_seq_length=None,
         decoder_seq_length=None,
         num_encoder_tokens=None,
-        num_decoder_tokens=None, 
+        num_decoder_tokens=None,
         latent_dim=300,
         weights_file=None,
-        training_set_size=250 # Due to memory issues we need to train in sets
-    )
-        # If passed with init process texts
-        self.load_text_data(encoder_texts, decoder_texts)
+        training_set_size=250  # Due to memory issues we need to train in sets
+    ):
         # If encoder / decoder seq_length = none we can set based on data
         self.encoder_seq_length = encoder_seq_length
         self.decoder_seq_length = decoder_seq_length
@@ -31,6 +30,10 @@ class BaseSeq2Seq(AbstractModelWrapper):
         self.num_encoder_tokens = num_encoder_tokens
         self.num_decoder_tokens = num_decoder_tokens
         self.latent_dim = latent_dim
+        # If passed with init process texts
+        self.input_tokenizer = None
+        self.output_tokenizer = None
+        self.load_text_data(encoder_texts, decoder_texts)
         self._start_checks()
         self._build_model()
         # Build model here?
@@ -48,8 +51,8 @@ class BaseSeq2Seq(AbstractModelWrapper):
         self.decoder_texts = decoder_texts
         
         # Convert to seqs - this will generate tokenizers
-        self.input_data = self._text2seq(self, self.encoder_texts, encoder=True)
-        self.output_data = self._text2seq(self, self.decoder_texts, encoder=False)
+        self.input_data = self._text2seq(self.encoder_texts, encoder=True)
+        self.output_data = self._text2seq(self.decoder_texts, encoder=False)
         
         # Set dictionaries - we need dictionaries in each direction
         # word_index = for word>int then generate as below for reverse
@@ -62,16 +65,16 @@ class BaseSeq2Seq(AbstractModelWrapper):
             (i, char) for char, i in self.output_dictionary.items()
         )
     
-        self.input_data = _pad_seq(
-            self.input_data, 
+        self.input_data = self._pad_seqs(
+            self.input_data,
             self.encoder_seq_length, 'pre'
             )
-        self.output_data = _pad_seq(
-            self.output_data, 
+        self.output_data = self._pad_seqs(
+            self.output_data,
             self.decoder_seq_length, 'post'
             )
         o_string = "Our input data has shape {0} and our output data has shape {1}"
-        print(ostring.format(self.input_data.shape, self.output_data.shape))
+        print(o_string.format(self.input_data.shape, self.output_data.shape))
         # Split into test and train
         self._split_data()
         
@@ -146,7 +149,7 @@ class BaseSeq2Seq(AbstractModelWrapper):
                     w = self.output_dictionary_rev[k]
             else:
                 # If input
-                if k not 0 and k < self.num_decoder_tokens:
+                if k != 0 and k < self.num_decoder_tokens:
                     w = self.input_dictionary_rev[k]
             if w:
                 text = text + w + ' '
@@ -167,6 +170,7 @@ class BaseSeq2Seq(AbstractModelWrapper):
     
     def _split_data(self, seed=9, proportion=0.2):
         # We need to split into train and test data
+        print("Generating training and test data")
         np.random.seed(seed)
         # split the data into training (80%) and testing (20%)
         (
@@ -265,7 +269,7 @@ class BaseSeq2Seq(AbstractModelWrapper):
             # Convert using decoder configuration
             tokenizer = self.output_tokenizer
         encoded_data = tokenizer.texts_to_sequences(input_text)
-        return encoder_data
+        return encoded_data
         
     def _pad_seqs(self, input_seq_data, length, padding):
         """ Pad sequences. """
