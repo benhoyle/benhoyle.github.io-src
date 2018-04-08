@@ -1,4 +1,4 @@
-from base_seq2seq import BaseSeq2Seq
+from base_seq2seq import SharedGlove
 from random import randint
 from numpy import array
 from numpy import argmax
@@ -9,23 +9,13 @@ from keras.layers import Input
 from keras.layers import LSTM
 from keras.layers import Dense
 
-class CBModel(BaseSeq2Seq):
+class CBModel(SharedGlove):
     """ Model based on Chollet / Brownlee Blog Posts.""" 
-    
-    def _predict_from_seq(self, seq):
-        """ Predict output sequence from input seq. """
-        predicted_output_seq = ""
-        return predicted_output_seq
         
     def _start_checks(self):
         """ Checks to run when initialising. """
         pass
-        
-    def _generate_tokenizers(self):
-        """ Generate tokenizers for data. """
-        self.input_tokenizer = ""
-        self.output_tokenizer = ""
-        
+                
     def _sample(self, preds, temperature=1.0):
         # helper function to sample an index from a probability array
         preds = np.asarray(preds).astype('float64')
@@ -33,7 +23,32 @@ class CBModel(BaseSeq2Seq):
         exp_preds = np.exp(preds)
         preds = exp_preds / np.sum(exp_preds)
         probas = np.random.multinomial(1, preds, 1)
-    return np.argmax(probas)
+        return np.argmax(probas)
+    
+    def _predict_from_seq(self, seq, temp=1.0):
+        """ Predict output sequence from input seq. """
+        #predict_sequence(infenc, infdec, source, decoder_seq_length, temp=1.0):
+        # encode
+        state = self.infenc.predict(seq)
+        # start of sequence input
+        target_seq = array([self.output_dictionary["startseq"]])
+        # collect predictions
+        output = list()
+        for t in range(self.decoder_seq_length):
+            # predict next char
+            yhat, h, c = self.infdec.predict([target_seq] + state)
+            # update state
+            state = [h, c]
+            # update target sequence - this needs to be the argmax
+            next_int = self._sample(yhat[0, 0, :], temp)
+            output.append(next_int)
+            # It seems like we throw a lot of information away here - 
+            # can we build in the probabilities?
+            target_seq = array([next_int])
+            # Check for stopping character
+            if next_int == self.output_dictionary["stopseq"]:
+                break
+        return output
 
     def _target_one_hot(self, input_seqs):
         """ Convert a sequence of integers to a one element shifted sequence of one-hot vectors."""
@@ -45,13 +60,11 @@ class CBModel(BaseSeq2Seq):
                     one_hot_out[i, t-1, word_int] = 1
         return one_hot_out
     
-    # We need to convert this for our present problem - this is similar to our generate dataset above
-    # prepare data for the LSTM
     def _generate_dataset(self, X, Y, i, i_end):
         """Return encoder_input_data, decoder_input_data, and decoder_target_data, latter as one-hot"""
         encoder_input_data = X[i:i_end]
         decoder_input_data = Y[i:i_end]
-        decoder_target_data = self.target_one_hot(decoder_input_data)
+        decoder_target_data = self._target_one_hot(decoder_input_data)
         return ([encoder_input_data, decoder_input_data], decoder_target_data)
     
     # returns train, inference_encoder and inference_decoder models

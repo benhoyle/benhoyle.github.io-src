@@ -1,4 +1,4 @@
-from base_seq2seq import BaseSeq2Seq
+from base_seq2seq import SharedGlove
 import numpy as np
 from keras.preprocessing import text
 from keras.models import Model
@@ -6,7 +6,7 @@ from keras.layers import Input, LSTM, Dense, Embedding
 from keras.layers import concatenate
 import os
 
-class LudwigModel(BaseSeq2Seq):
+class LudwigModel(SharedGlove):
     
     # I think we can reuse some of this?
     def _predict_from_seq(self, seq):
@@ -81,22 +81,6 @@ class LudwigModel(BaseSeq2Seq):
             np.take(I_2, indices, axis=0, out=I_2)
             np.take(Y_set, indices, axis=0, out=Y_set)
         return ([I_1, I_2], Y_set)
-        
-    def _generate_tokenizers(self):
-        """ Generate tokenizers for data. """
-        # This model uses a shared tokenizer for both input/output
-        if self.num_encoder_tokens != self.num_decoder_tokens:
-            # for shared embedding check input/output vocabs are equal
-            raise ValueError
-        print("Fitting tokenizers")
-        self.input_tokenizer = text.Tokenizer(
-                num_words=self.num_encoder_tokens, 
-                lower=True,
-                char_level=False,
-                oov_token="<UNK>"
-        )
-        self.input_tokenizer.fit_on_texts(self.encoder_texts + self.decoder_texts)
-        self.output_tokenizer = self.input_tokenizer
         
     def _start_checks(self):
         """ Checks to run when initialising. """

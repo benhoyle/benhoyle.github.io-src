@@ -292,7 +292,51 @@ class BaseSeq2Seq(AbstractModelWrapper):
             maxlen=length, 
             padding=padding
             )
-            
+    
+    # Below are methods that will be customised for particular models
+    def _predict_from_seq(self, seq):
+        """ Predict output sequence from input seq. """
+        predicted_output_seq = ""
+        return predicted_output_seq
+        
+    def _start_checks(self):
+        """ Checks to run when initialising. """
+        pass
+        
+    def _build_model(self):
+        """ Build the model. """
+        pass
+        
+    def _generate_tokenizers(self):
+        """ Generate tokenizers for data. """
+        self.input_tokenizer = ""
+        self.output_tokenizer = ""
+        
+    def _generate_dataset(self, X, Y, i, i_end):
+        """ Fill this in for models."""
+        dataset = ""
+        return dataset
+
+    
+class SharedGlove(BaseSeq2Seq):
+    """ Extended class to use shared embeddings from Glove file."""
+    
+    def _generate_tokenizers(self):
+        """ Generate tokenizers for data. """
+        # This model uses a shared tokenizer for both input/output
+        if self.num_encoder_tokens != self.num_decoder_tokens:
+            # for shared embedding check input/output vocabs are equal
+            raise ValueError
+        print("Fitting tokenizers")
+        self.input_tokenizer = text.Tokenizer(
+                num_words=self.num_encoder_tokens, 
+                lower=True,
+                char_level=False,
+                oov_token="<UNK>"
+        )
+        self.input_tokenizer.fit_on_texts(self.encoder_texts + self.decoder_texts)
+        self.output_tokenizer = self.input_tokenizer
+        
     def _load_shared_embedding(self):
         """ Load Glove embeddings. """
         print("Loading GloVe 100d embeddings from file")
@@ -324,30 +368,3 @@ class BaseSeq2Seq(AbstractModelWrapper):
             embedding_vector = embeddings_index.get(word)
             if embedding_vector is not None:
                 self.embedding_matrix[i] = embedding_vector
-    
-    # Below are methods that will be customised for particular models
-    def _predict_from_seq(self, seq):
-        """ Predict output sequence from input seq. """
-        predicted_output_seq = ""
-        return predicted_output_seq
-        
-    def _start_checks(self):
-        """ Checks to run when initialising. """
-        pass
-        
-    def _build_model(self):
-        """ Build the model. """
-        pass
-        
-    def _generate_tokenizers(self):
-        """ Generate tokenizers for data. """
-        self.input_tokenizer = ""
-        self.output_tokenizer = ""
-        
-    def _generate_dataset(self, X, Y, i, i_end):
-        """ Fill this in for models."""
-        dataset = ""
-        return dataset
-
-    
-            
