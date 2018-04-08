@@ -1,13 +1,11 @@
 from base_seq2seq import SharedGlove
 import numpy as np
-from keras.preprocessing import text
 from keras.models import Model
-from keras.layers import Input, LSTM, Dense, Embedding
-from keras.layers import concatenate
+from keras.layers import Input, LSTM, Dense, Embedding, concatenate
 import os
 
 class LudwigModel(SharedGlove):
-    
+
     # I think we can reuse some of this?
     def _predict_from_seq(self, seq):
         """ Predict output sequence from input seq. """
@@ -33,11 +31,11 @@ class LudwigModel(SharedGlove):
             ans_partial[0, -1] = mp
             if mp == self.output_dictionary["stopseq"]:  #  the index of the symbol EOS (end of sentence)
                 break
-            #if flag == 0:    
+            #if flag == 0:
             #    prob = prob * p
         predicted_output_seq = ans_partial[0]
         return predicted_output_seq
-        
+
     def _generate_dataset(self, X, Y, i, i_end):
         """ Generate the data for training/validation from X and Y.
         i_end is the end of the set, i is the start."""
@@ -49,7 +47,7 @@ class LudwigModel(SharedGlove):
             limit = np.where(sent==EOS)[0][0]  #  the position of the symbol EOS
             set_size += limit + 1
             limit_list.append(limit)
-   
+
         # Generate blank arrays for the set
         I_1 = np.zeros((set_size, self.encoder_seq_length))
         I_2 = np.zeros((set_size, self.decoder_seq_length))
@@ -58,7 +56,7 @@ class LudwigModel(SharedGlove):
         count = 0
         for l in range(0, (i_end - i)):
             limit = limit_list[l]
-            # We only need to create examples up to the length of the title 
+            # We only need to create examples up to the length of the title
             for m in range(1, limit+1):
                 # Generate our one-hot y out
                 one_hot_out = np.zeros((1, self.num_decoder_tokens))
@@ -73,7 +71,7 @@ class LudwigModel(SharedGlove):
                 I_2[count, :] = partial_input
                 Y_set[count, :] = one_hot_out
                 count += 1
-                    
+
             # Shuffle the I_1, I_2 and Y_set vectors for better training - trick from RL
             # - see here - np.take(X,np.random.permutation(X.shape[0]),axis=0,out=X);
             indices = np.random.permutation(I_1.shape[0])
@@ -81,11 +79,11 @@ class LudwigModel(SharedGlove):
             np.take(I_2, indices, axis=0, out=I_2)
             np.take(Y_set, indices, axis=0, out=Y_set)
         return ([I_1, I_2], Y_set)
-        
+
     def _start_checks(self):
         """ Checks to run when initialising. """
         pass
-        
+
     def _build_model(self):
         """ Build the model. """
         print("Building model")
@@ -94,9 +92,9 @@ class LudwigModel(SharedGlove):
         inputs1 = Input(shape=(self.encoder_seq_length,))
         #am1 = Embedding(X_vocab_len, 128)(inputs1)
         Shared_Embedding = Embedding(
-            output_dim=self.word_embedding_size, 
+            output_dim=self.word_embedding_size,
             input_dim=self.num_encoder_tokens,
-            weights=[self.embedding_matrix], 
+            weights=[self.embedding_matrix],
             input_length=self.encoder_seq_length
         )
         am1 = Shared_Embedding(inputs1)
@@ -113,4 +111,4 @@ class LudwigModel(SharedGlove):
         self.infdec = self.model
         print("Compiling model")
         self.model.compile(loss='categorical_crossentropy', optimizer='adam')
-    
+
