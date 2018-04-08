@@ -21,13 +21,13 @@ class AbstractModelWrapper(metaclass=ABCMeta):
         pass
     
     @abstractmethod
-    def _load_weights(self, filename):
+    def _load_weights(self):
         """ Load weights from file. """
         pass
         
     @abstractmethod
-    def _save_weights(self, filename):
-        """ Load weights from file. """
+    def _save_weights(self):
+        """ Save weights from file. """
         pass
         
     @abstractmethod

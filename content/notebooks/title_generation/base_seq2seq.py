@@ -4,6 +4,7 @@ from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 import random
 import math
+import os
 
 from abstract_model_wrapper import AbstractModelWrapper
 
@@ -69,22 +70,19 @@ class BaseSeq2Seq(AbstractModelWrapper):
             (i, char) for char, i in self.output_dictionary.items()
         )
     
-        self.input_data = self._pad_seqs(
-            self.input_data,
-            self.encoder_seq_length, 'pre'
-            )
-        self.output_data = self._pad_seqs(
-            self.output_data,
-            self.decoder_seq_length, 'post'
-            )
         o_string = "Our input data has shape {0} and our output data has shape {1}"
         print(o_string.format(self.input_data.shape, self.output_data.shape))
         # Split into test and train
         self._split_data()
         
-    def predict(self, input_text):
+    def predict(self, input_data):
         """ Predict output text from input text. """
-        input_seq = self._text2encoderseq(input_text)
+        # if input is text convert to sequence
+        if isinstance(input_data, str):
+            # If input_text is string then need to convert to single item list
+            input_seq = self._text2seq([input_data], encoder=True)
+        else:
+            input_seq = input_data
         predicted_output_seq = self._predict_from_seq(input_seq)
         predicted_text = self._seq2text(predicted_output_seq)
         return predicted_text
@@ -93,9 +91,10 @@ class BaseSeq2Seq(AbstractModelWrapper):
         """ Train in batches on all data with validation. """
         if reset_metrics:
             self._reset_metrics()
-        for e in range(0, epochs+1):
+        for e in range(0, epochs):
             print("Training for epoch {0}".format(e))
             self._train_epoch()
+            self._save_weights()
             self.example_output(5)
         self.plot_loss()
     
@@ -103,6 +102,10 @@ class BaseSeq2Seq(AbstractModelWrapper):
         """ Print model summary."""
         print("Training Model:\n")
         print(self.model.summary())
+    
+    def _save_weights(self):
+        """ Load weights from file. """
+        model.save_weights(self.weights_file, overwrite=True)
     
     def plot_loss(self):
         """ Plot training and validation loss. """
@@ -116,9 +119,6 @@ class BaseSeq2Seq(AbstractModelWrapper):
         
     def example_output(self, number):
         """ Print a number of example predictions. """
-        if not self.input_test_data or not self.output_test_data:
-            print("No test data")
-            return None
         
         # Select a set of test data at random
         num_test_titles = len(self.input_test_data)
@@ -270,10 +270,19 @@ class BaseSeq2Seq(AbstractModelWrapper):
         if encoder:
             # Convert using encoder configuration
             tokenizer = self.input_tokenizer
+            padding = 'pre'
+            length = self.encoder_seq_length
         else:
             # Convert using decoder configuration
             tokenizer = self.output_tokenizer
+            padding = 'post'
+            length = self.decoder_seq_length
         encoded_data = tokenizer.texts_to_sequences(input_text)
+        encoded_data = self._pad_seqs(
+            encoded_data,
+            length, 
+            padding
+            )
         return encoded_data
         
     def _pad_seqs(self, input_seq_data, length, padding):
@@ -283,6 +292,38 @@ class BaseSeq2Seq(AbstractModelWrapper):
             maxlen=length, 
             padding=padding
             )
+            
+    def _load_shared_embedding(self):
+        """ Load Glove embeddings. """
+        print("Loading GloVe 100d embeddings from file")
+        GLOVE_DIR = "glove/"
+
+        embeddings_index = {}
+        # For Python 3 tweaked to add 'rb'
+        f = open(os.path.join(GLOVE_DIR, 'glove.6B.100d.txt'), 'rb')
+        for line in f:
+            values = line.split()
+            # Tweaked to decode the binary text values
+            word = values[0].decode('utf-8')
+            coefs = np.asarray(values[1:], dtype='float32')
+            embeddings_index[word] = coefs
+        f.close()
+        self.word_embedding_size = 100 # As we are using the Glove 100d data
+        print('Found {0} word vectors.'.format(len(embeddings_index)))
+        self.embedding_matrix = np.zeros((self.num_encoder_tokens, self.word_embedding_size))
+        
+        # Filter our vocab to only the used items
+        words = [
+            (w, i) for w, i in self.input_dictionary.items() 
+            if int(i) < self.num_encoder_tokens
+            ]
+        
+        # This is from https://machinelearningmastery.com/use-word-embedding-layers-deep-learning-keras/      
+        print("Building embedding matrix")
+        for word, i in words:
+            embedding_vector = embeddings_index.get(word)
+            if embedding_vector is not None:
+                self.embedding_matrix[i] = embedding_vector
     
     # Below are methods that will be customised for particular models
     def _predict_from_seq(self, seq):
