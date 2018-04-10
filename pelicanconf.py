@@ -37,3 +37,6 @@ AUTHOR_FEED_RSS = None
 RELATIVE_URLS = True
 
 ARTICLE_ORDER_BY = 'title'
+
+TWITTER_URL = "https://twitter.com/bjh_ip"
+LINKEDIN_URL = "https://www.linkedin.com/in/benhoyle/"
