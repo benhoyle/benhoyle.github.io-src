@@ -10,7 +10,7 @@ pelican-plugins
 *.swp
 *.out
 *.py[cod]
-.env
+*.env
 
 # Jupyter Checkpoints
 *checkpoint.ipynb
