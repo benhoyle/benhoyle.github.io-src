@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 AUTHOR = u'Ben Hoyle'
-SITENAME = u'Machine Learning Projects'
+SITENAME = u'Practical Machine Learning Adventures'
 SITESUBTITLE = "A selection of machine learning projects"
 SITEURL = ''
 
