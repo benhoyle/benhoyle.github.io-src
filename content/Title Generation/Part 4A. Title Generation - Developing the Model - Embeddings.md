@@ -1,4 +1,3 @@
-
 Title: 4A. Title Generation - Developing the Model - Embeddings
 Tags: improving_results
 Authors: Ben Hoyle
@@ -777,15 +776,15 @@ From this training there now appears more of a link between the claim text and t
 
 This result seems close:
 ```
-Sample of claim text: 1 an apparatus comprising a capacitive sense array and a processing device wherein the capacitive sense array is configured to detect a presence of a touch object or a stylus wherein the capacitive se
-
-Predicted title is: method and apparatus for displaying a touch screen method and apparatus for the same  (with prob 1.9565373226245597e-05). 
- Test title is: capacitive sense array for detecting touch objects and an active stylus  
- ```
+    Sample of claim text: 1 an apparatus comprising a capacitive sense array and a processing device wherein the capacitive sense array is configured to detect a presence of a touch object or a stylus wherein the capacitive se
+    
+    Predicted title is: method and apparatus for displaying a touch screen method and apparatus for the same  (with prob 1.9565373226245597e-05). 
+    Test title is: capacitive sense array for detecting touch objects and an active stylus  
+```
  
- Training still appears unstable. Some of this may be due to the shuffling for regularisation.
+Training still appears unstable. Some of this may be due to the shuffling for regularisation.
  
- The results appear an improvement though on the previous model. It is worth keeping this feature.
+The results appear an improvement though on the previous model. It is worth keeping this feature.
 
 #### Options for Further Investigation
 
