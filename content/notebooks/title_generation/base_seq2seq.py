@@ -8,13 +8,138 @@ from keras.preprocessing import text
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 
+
 from keras.utils.vis_utils import model_to_dot
 from IPython.display import Image
 
+
 from abstract_model_wrapper import AbstractModelWrapper
 
+class MemEfficientS2S(AbstractModelWrapper):
+    """ General functions for a memory efficient sequence-2-sequence
+    model. """
 
-class BaseSeq2Seq(AbstractModelWrapper):
+    def print(self):
+        """ Print model summary."""
+        print("Training Model:\n")
+        print(self.model.summary())
+
+    def plot_loss(self):
+        """ Plot training and validation loss. """
+        plt.plot(self.train_loss)
+        plt.plot(self.val_loss)
+        plt.title('Model Loss')
+        plt.ylabel('Loss')
+        plt.xlabel('Iteration')
+        plt.legend(['train', 'test'], loc='upper left')
+        plt.show()
+
+    def _save_weights(self):
+        """ Load weights from file. """
+        self.model.save_weights(self.weights_file, overwrite=True)
+
+    def _load_weights(self):
+        """ Load weights from file. """
+        try:
+            # load weights
+            self.model.load_weights(self.weights_file)
+            print("Loaded weights")
+        except:
+            print("No existing weights found")
+
+    def _split_data(self, seed=9, proportion=0.2):
+        # We need to split into train and test data
+        print("Generating training and test data")
+        np.random.seed(seed)
+        # split the data into training (80%) and testing (20%)
+        (
+            self.input_train_data,
+            self.input_test_data,
+            self.output_train_data,
+            self.output_test_data,
+        ) = train_test_split(
+                self.input_data,
+                self.output_data,
+                test_size=proportion,
+                random_state=seed
+            )
+
+    def _get_dataset(self, i, i_end, test=False):
+        """ Get a segment of data from i-i_end. """
+        if test:
+            # Get training dataset
+            dataset = self._generate_dataset(
+                self.input_test_data,
+                self.output_test_data,
+                i, i_end)
+        else:
+            # Get test dataset
+            dataset = self._generate_dataset(
+                self.input_train_data,
+                self.output_train_data,
+                i, i_end)
+        return dataset
+
+    def _train_set(self, training_data, validation_data):
+        """ Perform one training iteration model."""
+        model_inputs, model_outputs = training_data
+        if validation_data:
+            callback = self.model.fit(
+                model_inputs,
+                model_outputs,
+                validation_data=(validation_data),
+                batch_size=self.batch_size,
+                epochs=1
+            )
+        else:
+            callback = self.model.fit(
+                model_inputs,
+                model_outputs,
+                batch_size=self.batch_size,
+                epochs=1
+            )
+        self.train_loss += callback.history['loss']
+        self.val_loss += callback.history['val_loss']
+
+    def _train_epoch(self):
+        """ Training iterations for one epoch - i.e. one pass through the
+        training data. """
+        num_train_examples = len(self.input_train_data)
+        num_test_examples = len(self.input_test_data)
+
+        # Loop here to avoid memory issues with the target one hot vector
+        for i in range(0, num_train_examples, self.training_set_size):
+            if i + self.training_set_size >= num_train_examples:
+                i_end = num_train_examples
+            else:
+                i_end = i + self.training_set_size
+
+            # Generate a range for the test data
+            i_test = math.floor(i * (num_test_examples/num_train_examples))
+            i_test_end = math.floor(
+                i_end * (num_test_examples/num_train_examples)
+                )
+
+            # Generate small sets of train and test data
+            training_data = self._get_dataset(i, i_end, test=False)
+            validation_data = self._get_dataset(i_test, i_test_end, test=True)
+            # Run a training iteration
+            print(
+                "Training on batch {0} to {1} of {2}".format(
+                        i,
+                        i_end,
+                        num_train_examples
+                    )
+                )
+            self._train_set(training_data, validation_data)
+
+    def _reset_metrics(self):
+        """ Reset tracked training metrics. """
+        self.train_loss = []
+        self.val_loss = []
+
+
+class BaseSeq2Seq(MemEfficientS2S):
     """ Abstract class for sequence to sequence models for mixing in. """
 
     def __init__(
@@ -117,21 +242,6 @@ class BaseSeq2Seq(AbstractModelWrapper):
                 ).create_png(prog='dot')
             )
 
-
-    def _save_weights(self):
-        """ Load weights from file. """
-        self.model.save_weights(self.weights_file, overwrite=True)
-
-    def plot_loss(self):
-        """ Plot training and validation loss. """
-        plt.plot(self.train_loss)
-        plt.plot(self.val_loss)
-        plt.title('Model Loss')
-        plt.ylabel('Loss')
-        plt.xlabel('Iteration')
-        plt.legend(['train', 'test'], loc='upper left')
-        plt.show()
-
     def example_output(self, number):
         """ Print a number of example predictions. """
 
@@ -174,106 +284,6 @@ class BaseSeq2Seq(AbstractModelWrapper):
             if w:
                 text = text + w + ' '
         return text
-
-    def _load_weights(self):
-        """ Load weights from file. """
-        try:
-            # load weights
-            self.model.load_weights(self.weights_file)
-            print("Loaded weights")
-        except:
-            print("No existing weights found")
-
-    def _split_data(self, seed=9, proportion=0.2):
-        # We need to split into train and test data
-        print("Generating training and test data")
-        np.random.seed(seed)
-        # split the data into training (80%) and testing (20%)
-        (
-            self.input_train_data,
-            self.input_test_data,
-            self.output_train_data,
-            self.output_test_data,
-        ) = train_test_split(
-                self.input_data,
-                self.output_data,
-                test_size=proportion,
-                random_state=seed
-            )
-
-    def _get_dataset(self, i, i_end, test=False):
-        """ Get a segment of data from i-i_end. """
-        if test:
-            # Get training dataset
-            dataset = self._generate_dataset(
-                self.input_test_data,
-                self.output_test_data,
-                i, i_end)
-        else:
-            # Get test dataset
-            dataset = self._generate_dataset(
-                self.input_train_data,
-                self.output_train_data,
-                i, i_end)
-        return dataset
-
-    def _train_set(self, training_data, validation_data):
-        """ Perform one training iteration model."""
-        model_inputs, model_outputs = training_data
-        if validation_data:
-            callback = self.model.fit(
-                model_inputs,
-                model_outputs,
-                validation_data=(validation_data),
-                batch_size=self.batch_size,
-                epochs=1
-            )
-        else:
-            callback = self.model.fit(
-                model_inputs,
-                model_outputs,
-                batch_size=self.batch_size,
-                epochs=1
-            )
-        self.train_loss += callback.history['loss']
-        self.val_loss += callback.history['val_loss']
-
-    def _train_epoch(self):
-        """ Training iterations for one epoch - i.e. one pass through the
-        training data. """
-        num_train_examples = len(self.input_train_data)
-        num_test_examples = len(self.input_test_data)
-
-        # Loop here to avoid memory issues with the target one hot vector
-        for i in range(0, num_train_examples, self.training_set_size):
-            if i + self.training_set_size >= num_train_examples:
-                i_end = num_train_examples
-            else:
-                i_end = i + self.training_set_size
-
-            # Generate a range for the test data
-            i_test = math.floor(i * (num_test_examples/num_train_examples))
-            i_test_end = math.floor(
-                i_end * (num_test_examples/num_train_examples)
-                )
-
-            # Generate small sets of train and test data
-            training_data = self._get_dataset(i, i_end, test=False)
-            validation_data = self._get_dataset(i_test, i_test_end, test=True)
-            # Run a training iteration
-            print(
-                "Training on batch {0} to {1} of {2}".format(
-                        i,
-                        i_end,
-                        num_train_examples
-                    )
-                )
-            self._train_set(training_data, validation_data)
-
-    def _reset_metrics(self):
-        """ Reset tracked training metrics. """
-        self.train_loss = []
-        self.val_loss = []
 
     def _text2seq(self, input_text, encoder=True):
         """ Convert texts to sequences. """
