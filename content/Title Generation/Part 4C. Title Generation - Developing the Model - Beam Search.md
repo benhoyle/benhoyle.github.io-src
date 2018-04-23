@@ -10,7 +10,7 @@ This post looks at developing our initial models to include state of the art fea
 To recap:
 
 * We have two models: the Ludwig model and the Chollet/Brownlee model. 
-* Performance so far has been fairly poor.
+* Performance so far has been fairly poor but the Ludwig model appears to give better results out of the box.
 * Each model had slightly different characteristics - the Ludwig model produced better formed output but seemed to simply memorise and repeat titles, the Chollet/Brownlee model had a lower loss and appeared to memorise less but produced more nonsensical outputs.
 
 In this post we will look at implementing a beam search decoder as an improvement to our previous greedy decoder.
@@ -27,7 +27,7 @@ To remedy this you might want to keep track of all possible output sequences. Ho
 
 Machine Learning Mastery has an article [here](https://machinelearningmastery.com/beam-search-decoder-natural-language-processing/) that describes how to implement a beam search in Python. However, in the comments this is criticised for being too simplistic. On review, I think this criticism is warranted: the function does not look at different, branching trees of tokens; instead, the probabilities are "given" in a pre-generated array.
 
-Here is [another example](https://gist.github.com/udibr/67be473cf053d8c38730) of a beam search for keras and here is an [example slide] (http://www.cs.cmu.edu/afs/cs/academic/class/46927-f97/slides/Lec3/sld023.htm) showing the branching trees.
+Here is [another example](https://gist.github.com/udibr/67be473cf053d8c38730) of a beam search for keras and here is an [example slide](http://www.cs.cmu.edu/afs/cs/academic/class/46927-f97/slides/Lec3/sld023.htm) showing the branching trees.
 
 To implement, the beam search algorithm, we need a function that performs the following steps:
 
@@ -43,14 +43,17 @@ We can also amend our methods for printing examples to print the top k sequences
 With reference to our models, we can implement beam search as a custom `_predict_from_seq()` method.
 
 We need a data structure to store, for our k top sequences:
+
 * scores;
 * token sequences.
 
 Our input will be:
+
 * claim text (as for our previous decoder); and
 * a value for k, the number of sequences to track.
 
 We want to output:
+
 * the k sequences with top scores, where sequences stop when the stop token is predicted or when the maximum number of output tokens is reached.
 
 ## Ludwig Model - Custom Decoding Function
@@ -135,15 +138,6 @@ machine = LudwigModel(
     Building embedding matrix
     Compiling model
     Loaded weights
-
-
-
-```python
-machine._load_weights()
-```
-
-    Loaded weights
-
 
 
 ```python

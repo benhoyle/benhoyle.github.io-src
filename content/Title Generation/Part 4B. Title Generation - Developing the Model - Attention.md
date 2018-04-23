@@ -1,4 +1,3 @@
-
 Title: 4B. Title Generation - Developing the Model - Attention
 Tags: improving_results
 Authors: Ben Hoyle
@@ -485,7 +484,7 @@ There is also no explicit non-linearity in the model.
 
 *** A big caveat is that I am still not sure that this implementation of attention works in the way it is meant to work. A todo would be to implement a lower level attention model that builds a custom Keras layer. It would also be good to build a visualiser for the attention vector. But that is too much work for this little project...***
 
----
+
 ---
 
 ## Regularisation
@@ -683,30 +682,6 @@ reg_machine.train(epochs=2)
 ![png]({filename}/images/TG_4B_output_24_1.png)
 
 
-
-```python
-reg_machine.train(epochs=5)
-```
-
-    Training for epoch 0
-    Training on batch 0 to 250 of 24000
-    Train on 2639 samples, validate on 655 samples
-    Epoch 1/1
-    2639/2639 [==============================] - 40s 15ms/step - loss: 3.1682 - val_loss: 3.0517
-    Training on batch 250 to 500 of 24000
-    ...YADAYADAYADA...
-    Training on batch 7500 to 7750 of 24000
-    Train on 2537 samples, validate on 672 samples
-    Epoch 1/1
-    2537/2537 [==============================] - 43s 17ms/step - loss: 3.1184 - val_loss: 3.2998
-    Training on batch 7750 to 8000 of 24000
-    Train on 2616 samples, validate on 641 samples
-    Epoch 1/1
-    2616/2616 [==============================] - 43s 16ms/step - loss: 3.1064 - val_loss: 3.2853
-    Training on batch 8000 to 8250 of 24000
-    Train on 2567 samples, validate on 638 samples
-    Epoch 1/1
-    1472/2567 [================>.............] - ETA: 17s - loss: 2.9281
 
 ### Comments on Dropout & Regularisation
 
