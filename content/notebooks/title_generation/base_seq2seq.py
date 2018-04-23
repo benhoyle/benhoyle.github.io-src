@@ -8,6 +8,8 @@ from keras.preprocessing import text
 from keras.preprocessing.sequence import pad_sequences
 import numpy as np
 
+from keras.utils.vis_utils import model_to_dot
+from IPython.display import Image
 
 from abstract_model_wrapper import AbstractModelWrapper
 
@@ -108,6 +110,13 @@ class BaseSeq2Seq(AbstractModelWrapper):
         """ Print model summary."""
         print("Training Model:\n")
         print(self.model.summary())
+        return Image(
+            model_to_dot(
+                    self.model,
+                    show_shapes=True
+                ).create_png(prog='dot')
+            )
+
 
     def _save_weights(self):
         """ Load weights from file. """
