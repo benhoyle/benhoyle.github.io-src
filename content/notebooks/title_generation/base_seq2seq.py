@@ -272,7 +272,8 @@ class BaseSeq2Seq(MemEfficientS2S):
         text = ''
         for k in seq:
             w = ''
-            k = k.astype(int)
+            if not isinstance(k, int):
+                k = k.astype(int)
             if output:
                 # Adapted to take account of different control integers
                 if k not in control_ints and k < self.num_decoder_tokens:
