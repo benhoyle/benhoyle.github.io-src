@@ -3,7 +3,7 @@ Tags: bonus
 Authors: Ben Hoyle
 Summary: This is an extra bonus post looking at how we could apply the same techniques to office action text classification.
 
-# Classifying Office Action Text
+# 6. Bonus Content - Classifying Office Action Text
 
 So I have obtained prosecution histories for around 100 cases. These are then put through a processing pipeline to extract text sections from the PDF files via the tesseract Optical Character Recognition (OCR) engine.
 
@@ -40,41 +40,14 @@ I manually annotated the data as a spreadsheet. We thus need to load the data fr
 from openpyxl import load_workbook
 
 wb = load_workbook('data_to_label_processed.xlsx')
-print(wb.sheetnames)
-```
-
-    ['Sheet']
-
-
-
-```python
 active_sheet = wb[wb.sheetnames[0]]
-```
-
-
-```python
-list(active_sheet.rows)[1][0].value
-```
-
-
-
-
-    '10850871.4'
-
-
-
-
-```python
 read_data = []
 for row in active_sheet.rows:
     row_data = []
     for column in row:
         row_data.append(column.value)
     read_data.append(row_data)
-```
 
-
-```python
 print("There are {0} records - each record having {1} fields:\n{2}".format(len(read_data), len(read_data[1]), read_data[1]))
 ```
 
@@ -128,8 +101,6 @@ print("Our classes are now a matrix of {0}".format(Y.shape))
 print("Original label: {0}; Converted label: {1}".format(Y_class[0], Y[0]))
 ```
 
-    /home/ben/anaconda3/envs/tf_gpu_source/lib/python3.6/site-packages/h5py/__init__.py:36: FutureWarning: Conversion of the second argument of issubdtype from `float` to `np.floating` is deprecated. In future, it will be treated as `np.float64 == np.dtype(float).type`.
-      from ._conv import register_converters as _register_converters
     Using TensorFlow backend.
 
 
@@ -198,7 +169,7 @@ import numpy as np
 Y_integers = np.argmax(Y, axis=1)
 ```
 
-## Start With Naive Bayes
+## Try Some Classifiers
 
 
 ```python
@@ -218,8 +189,7 @@ print(
 )
 ```
 
-    /home/ben/anaconda3/envs/tf_gpu_source/lib/python3.6/site-packages/sklearn/model_selection/_split.py:605: Warning: The least populated class in y has only 9 members, which is too few. The minimum number of members in any class cannot be less than n_splits=10.
-      % (min_groups, self.n_splits)), Warning)
+Warning: The least populated class in y has only 9 members, which is too few. The minimum number of members in any class cannot be less than n_splits=10.
 
 
     Random Classifier has an average classification accuracy of 18.98% (3.46%)
@@ -289,7 +259,7 @@ print(
 )
 ```
 
-    /home/ben/anaconda3/envs/tf_gpu_source/lib/python3.6/site-packages/sklearn/model_selection/_split.py:605: Warning: The least populated class in y has only 9 members, which is too few. The minimum number of members in any class cannot be less than n_splits=10.
+    Warning: The least populated class in y has only 9 members, which is too few. The minimum number of members in any class cannot be less than n_splits=10.
       % (min_groups, self.n_splits)), Warning)
 
 
@@ -329,7 +299,7 @@ plt.show()
 
 
 
-![png]({filename}/images/CC_6_output_24_1.png)
+![png]({filename}/images/CC_6_output_24_1.resized.png)
 
 
 
@@ -359,10 +329,6 @@ plot_confusion_matrix(MLP_cnf_matrix, classes=label_e.classes_, normalize=True,
 plt.show()
 ```
 
-    /home/ben/anaconda3/envs/tf_gpu_source/lib/python3.6/site-packages/sklearn/model_selection/_split.py:605: Warning: The least populated class in y has only 9 members, which is too few. The minimum number of members in any class cannot be less than n_splits=10.
-      % (min_groups, self.n_splits)), Warning)
-
-
     MLP Classifier has an average classification accuracy of 70.70 (4.68)
     Normalized confusion matrix
     [[ 50.     0.    16.67   0.    16.67   0.    16.67   0.     0.     0.  ]
@@ -378,7 +344,7 @@ plt.show()
 
 
 
-![png]({filename}/images/CC_6_output_25_2.png)
+![png]({filename}/images/CC_6_output_25_2.resized.png)
 
 
 ## Comments on Results
@@ -386,6 +352,7 @@ plt.show()
 These are fairly good results out-of-the-box.
 
 I think the main improvements would come from:
+
 * cleaner data; 
 * more data;
 * more consistent labelling.
