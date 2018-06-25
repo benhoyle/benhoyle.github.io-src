@@ -1,4 +1,3 @@
-
 Title: 3. Tweet2Bible - Comparing Similarity Measures
 Tags: initial_model
 Authors: Ben Hoyle
@@ -9,8 +8,6 @@ Summary: This post looks at some approaches for matching tweets to Bible passage
 Now we have our data we can look at some matching.
 
 To start we will look at a number of off-the-shelf similarity functions. We will then compare these subjectively and see what gets us the best matches.
-
-Note the docker-machine virtual machine only has one CPU and 1GB RAM - we need to run docker without the VM...
 
 ## Similarity Functions
 
@@ -49,6 +46,7 @@ print("We have {0} Bible passages.".format(len(bible_data)))
     We have 31102 Bible passages.
 
 
+---
 ### Difflib SequenceMatcher
 
 
@@ -63,11 +61,11 @@ def get_matches(tweet, bible_data):
     """Match a tweet against the bible_data."""
     # Get matches
     scores = [
-        (verse, passage, similar(tweet, passage)) 
+        (verse, passage, similar(tweet, passage))
         for verse, passage in bible_data
     ]
     # Sort by descending score
-    scores.sort(key=lambda tup: tup[2], reverse = True) 
+    scores.sort(key=lambda tup: tup[2], reverse = True)
     return scores
 
 def test_random_tweets(tweets, bible_data, n=5, k=5):
@@ -88,69 +86,70 @@ def test_random_tweets(tweets, bible_data, n=5, k=5):
 ```python
 test_random_tweets(tweets, bible_data)
 ```
+```text
+-----------------
+Tweet text: "In addition, along with the advance of the electronic information society, a variety of electronic devices are utilized." #thetimeswelivein
 
-    -----------------
-    Tweet text: "In addition, along with the advance of the electronic information society, a variety of electronic devices are utilized." #thetimeswelivein
-    
-    Mark 8:19, When I broke the five loaves among the five thousand, how many baskets full of broken pieces did you take up? They told him, Twelve., 0.4338235294117647
-    
-    Exodus 6:16, These are the names of the sons of Levi according to their generations: Gershon, and Kohath, and Merari; and the years of the life of Levi were one hundred thirty-seven years., 0.43174603174603177
-    
-    Numbers 3:21, Of Gershon was the family of the Libnites, and the family of the Shimeites: these are the families of the Gershonites., 0.4186046511627907
-    
-    Job 4:10, The roaring of the lion, and the voice of the fierce lion, the teeth of the young lions, are broken., 0.4166666666666667
-    
-    2 Corinthians 3:9, For if the service of condemnation has glory, the service of righteousness exceeds much more in glory., 0.4132231404958678
-    -----------------
-    Tweet text: RT @Dr_Cuspy: Why Watson and Siri Are Not Real AI http://t.co/s5MsxRK7Nd via @PopMech [Hofstadter pops up again; a renaissance?]
-    
-    Exodus 2:22, She bore a son, and he named him Gershom, for he said, I have lived as a foreigner in a foreign land., 0.35807860262008734
-    
-    2 Kings 3:22, They rose up early in the morning, and the sun shone on the water, and the Moabites saw the water over against them as red as blood., 0.35384615384615387
-    
-    Job 30:20, I cry to you, and you do not answer me. I stand up, and you gaze at me., 0.35175879396984927
-    
-    Job 38:26, To cause it to rain on a land where no man is; on the wilderness, in which there is no man;, 0.3470319634703196
-    
-    Genesis 34:31, They said, Should he deal with our sister as with a prostitute?, 0.34554973821989526
-    -----------------
-    Tweet text: EPO - The Administrative Council has been busy: updates concerning international supplementary searches, fees & search sharing coming up...
-    
-    Judges 1:21, The children of Benjamin did not drive out the Jebusites who inhabited Jerusalem; but the Jebusites dwell with the children of Benjamin in Jerusalem to this day., 0.3933333333333333
-    
-    2 Timothy 2:18, men who have erred concerning the truth, saying that the resurrection is already past, and overthrowing the faith of some., 0.39080459770114945
-    
-    Acts 15:9, He made no distinction between us and them, cleansing their hearts by faith., 0.39069767441860465
-    
-    Hebrews 11:38, (of whom the world was not worthy), wandering in deserts, mountains, caves, and the holes of the earth., 0.3884297520661157
-    
-    Joshua 13:28, This is the inheritance of the children of Gad according to their families, the cities and its villages., 0.3868312757201646
-    -----------------
-    Tweet text: Historians (and journalists) are always going to be important. https://t.co/o4s7DJEYwE
-    
-    Leviticus 9:16, He presented the burnt offering, and offered it according to the ordinance., 0.40993788819875776
-    
-    Job 36:33, Its noise tells about him, and the livestock also concerning the storm that comes up., 0.4093567251461988
-    
-    Proverbs 16:11, Honest balances and scales are Yahweh's; all the weights in the bag are his work., 0.40718562874251496
-    
-    John 20:10, So the disciples went away again to their own homes., 0.4057971014492754
-    
-    Acts 3:1, Peter and John were going up into the temple at the hour of prayer, the ninth hour., 0.40236686390532544
-    -----------------
-    Tweet text: Tip: use Chromium on Karmic EeePC in full screen (F11): excellent use of limited space.
-    
-    Isaiah 28:29, This also comes forth from Yahweh of Armies, who is wonderful in counsel, and excellent in wisdom., 0.44324324324324327
-    
-    Psalm 139:15, My frame wasn't hidden from you, when I was made in secret, woven together in the depths of the earth., 0.4126984126984127
-    
-    Hebrews 1:4, having become so much better than the angels, as he has inherited a more excellent name than they have., 0.4105263157894737
-    
-    Job 12:21, He pours contempt on princes, and loosens the belt of the strong., 0.40789473684210525
-    
-    Deuteronomy 25:10, His name shall be called in Israel, The house of him who has his shoe untied., 0.4024390243902439
+Mark 8:19, When I broke the five loaves among the five thousand, how many baskets full of broken pieces did you take up? They told him, Twelve., 0.4338235294117647
 
+Exodus 6:16, These are the names of the sons of Levi according to their generations: Gershon, and Kohath, and Merari; and the years of the life of Levi were one hundred thirty-seven years., 0.43174603174603177
 
+Numbers 3:21, Of Gershon was the family of the Libnites, and the family of the Shimeites: these are the families of the Gershonites., 0.4186046511627907
+
+Job 4:10, The roaring of the lion, and the voice of the fierce lion, the teeth of the young lions, are broken., 0.4166666666666667
+
+2 Corinthians 3:9, For if the service of condemnation has glory, the service of righteousness exceeds much more in glory., 0.4132231404958678
+-----------------
+Tweet text: RT @Dr_Cuspy: Why Watson and Siri Are Not Real AI http://t.co/s5MsxRK7Nd via @PopMech [Hofstadter pops up again; a renaissance?]
+
+Exodus 2:22, She bore a son, and he named him Gershom, for he said, I have lived as a foreigner in a foreign land., 0.35807860262008734
+
+2 Kings 3:22, They rose up early in the morning, and the sun shone on the water, and the Moabites saw the water over against them as red as blood., 0.35384615384615387
+
+Job 30:20, I cry to you, and you do not answer me. I stand up, and you gaze at me., 0.35175879396984927
+
+Job 38:26, To cause it to rain on a land where no man is; on the wilderness, in which there is no man;, 0.3470319634703196
+
+Genesis 34:31, They said, Should he deal with our sister as with a prostitute?, 0.34554973821989526
+-----------------
+Tweet text: EPO - The Administrative Council has been busy: updates concerning international supplementary searches, fees & search sharing coming up...
+
+Judges 1:21, The children of Benjamin did not drive out the Jebusites who inhabited Jerusalem; but the Jebusites dwell with the children of Benjamin in Jerusalem to this day., 0.3933333333333333
+
+2 Timothy 2:18, men who have erred concerning the truth, saying that the resurrection is already past, and overthrowing the faith of some., 0.39080459770114945
+
+Acts 15:9, He made no distinction between us and them, cleansing their hearts by faith., 0.39069767441860465
+
+Hebrews 11:38, (of whom the world was not worthy), wandering in deserts, mountains, caves, and the holes of the earth., 0.3884297520661157
+
+Joshua 13:28, This is the inheritance of the children of Gad according to their families, the cities and its villages., 0.3868312757201646
+-----------------
+Tweet text: Historians (and journalists) are always going to be important. https://t.co/o4s7DJEYwE
+
+Leviticus 9:16, He presented the burnt offering, and offered it according to the ordinance., 0.40993788819875776
+
+Job 36:33, Its noise tells about him, and the livestock also concerning the storm that comes up., 0.4093567251461988
+
+Proverbs 16:11, Honest balances and scales are Yahweh's; all the weights in the bag are his work., 0.40718562874251496
+
+John 20:10, So the disciples went away again to their own homes., 0.4057971014492754
+
+Acts 3:1, Peter and John were going up into the temple at the hour of prayer, the ninth hour., 0.40236686390532544
+-----------------
+Tweet text: Tip: use Chromium on Karmic EeePC in full screen (F11): excellent use of limited space.
+
+Isaiah 28:29, This also comes forth from Yahweh of Armies, who is wonderful in counsel, and excellent in wisdom., 0.44324324324324327
+
+Psalm 139:15, My frame wasn't hidden from you, when I was made in secret, woven together in the depths of the earth., 0.4126984126984127
+
+Hebrews 1:4, having become so much better than the angels, as he has inherited a more excellent name than they have., 0.4105263157894737
+
+Job 12:21, He pours contempt on princes, and loosens the belt of the strong., 0.40789473684210525
+
+Deuteronomy 25:10, His name shall be called in Israel, The house of him who has his shoe untied., 0.4024390243902439
+```
+
+---
 ### spaCy String Similarity
 
 The 'en_core_web_lg' file crashed my Jupyter kernel but the 'en_core_web_sm' file loaded okay. I'll try the medium-sized file 'en_core_web_md'. Yes - 'md' file loaded okay.
@@ -161,20 +160,7 @@ Spacy uses an [average of the word vectors in a span or doc](https://spacy.io/us
 ```python
 !python3 -m spacy download en_core_web_md
 ```
-
-    Collecting https://github.com/explosion/spacy-models/releases/download/en_core_web_md-2.0.0/en_core_web_md-2.0.0.tar.gz
-    [?25l  Downloading https://github.com/explosion/spacy-models/releases/download/en_core_web_md-2.0.0/en_core_web_md-2.0.0.tar.gz (120.8MB)
-    [K    100% |################################| 120.9MB 7.0MB/s ta 0:00:011 0% |                                | 1.2MB 2.2MB/s eta 0:00:56    2% |                                | 2.8MB 4.0MB/s eta 0:00:30    2% |                                | 3.3MB 3.9MB/s eta 0:00:31    3% |#                               | 4.1MB 5.6MB/s eta 0:00:21    3% |#                               | 4.4MB 3.7MB/s eta 0:00:32    5% |#                               | 6.8MB 7.2MB/s eta 0:00:16    8% |##                              | 9.8MB 6.0MB/s eta 0:00:19    8% |##                              | 10.8MB 6.1MB/s eta 0:00:19    9% |##                              | 11.2MB 6.3MB/s eta 0:00:18    9% |###                             | 11.5MB 5.1MB/s eta 0:00:22    12% |###                             | 14.7MB 4.9MB/s eta 0:00:22    12% |###                             | 15.0MB 4.9MB/s eta 0:00:22    12% |####                            | 15.3MB 6.0MB/s eta 0:00:18    13% |####                            | 16.0MB 5.2MB/s eta 0:00:21    13% |####                            | 16.4MB 5.6MB/s eta 0:00:19    15% |####                            | 18.1MB 7.9MB/s eta 0:00:13    16% |#####                           | 19.6MB 7.2MB/s eta 0:00:15    16% |#####                           | 20.0MB 6.4MB/s eta 0:00:16    17% |#####                           | 21.4MB 5.7MB/s eta 0:00:18    19% |######                          | 23.4MB 8.2MB/s eta 0:00:12    19% |######                          | 24.0MB 6.3MB/s eta 0:00:16    20% |######                          | 24.4MB 9.9MB/s eta 0:00:10    20% |######                          | 25.0MB 5.3MB/s eta 0:00:19    21% |######                          | 25.7MB 3.7MB/s eta 0:00:26    22% |#######                         | 26.7MB 4.6MB/s eta 0:00:21    25% |########                        | 30.3MB 5.2MB/s eta 0:00:18    26% |########                        | 31.6MB 6.3MB/s eta 0:00:15    27% |########                        | 33.6MB 4.5MB/s eta 0:00:20    28% |#########                       | 35.0MB 8.4MB/s eta 0:00:11    29% |#########                       | 36.0MB 8.7MB/s eta 0:00:10    30% |#########                       | 37.4MB 7.6MB/s eta 0:00:12    33% |##########                      | 40.2MB 7.2MB/s eta 0:00:12    33% |##########                      | 40.7MB 8.6MB/s eta 0:00:10    35% |###########                     | 43.1MB 4.7MB/s eta 0:00:17    39% |############                    | 47.7MB 5.6MB/s eta 0:00:14    46% |##############                  | 55.8MB 9.0MB/s eta 0:00:08    46% |##############                  | 56.2MB 7.3MB/s eta 0:00:09    47% |###############                 | 57.5MB 4.9MB/s eta 0:00:13    50% |################                | 61.4MB 4.5MB/s eta 0:00:14    52% |################                | 63.4MB 7.0MB/s eta 0:00:09    52% |################                | 63.7MB 7.7MB/s eta 0:00:08    53% |#################               | 64.3MB 8.3MB/s eta 0:00:07    54% |#################               | 65.3MB 6.3MB/s eta 0:00:09    54% |#################               | 65.6MB 5.4MB/s eta 0:00:11    55% |#################               | 67.3MB 5.8MB/s eta 0:00:10    56% |##################              | 68.4MB 6.2MB/s eta 0:00:09    56% |##################              | 68.7MB 6.0MB/s eta 0:00:09    57% |##################              | 69.0MB 5.2MB/s eta 0:00:10    57% |##################              | 69.5MB 8.3MB/s eta 0:00:07    57% |##################              | 69.9MB 7.6MB/s eta 0:00:07    59% |###################             | 72.0MB 7.6MB/s eta 0:00:07    59% |###################             | 72.3MB 4.7MB/s eta 0:00:11    61% |###################             | 74.3MB 4.9MB/s eta 0:00:10    62% |###################             | 75.0MB 5.7MB/s eta 0:00:09    62% |###################             | 75.3MB 5.6MB/s eta 0:00:09    63% |####################            | 76.3MB 6.1MB/s eta 0:00:08    64% |####################            | 77.4MB 5.6MB/s eta 0:00:08    67% |#####################           | 82.2MB 4.0MB/s eta 0:00:10    70% |######################          | 84.7MB 5.0MB/s eta 0:00:08    71% |######################          | 86.8MB 5.9MB/s eta 0:00:06    72% |#######################         | 87.4MB 5.2MB/s eta 0:00:07    76% |########################        | 91.9MB 5.2MB/s eta 0:00:06    76% |########################        | 92.2MB 5.6MB/s eta 0:00:06    76% |########################        | 92.9MB 8.0MB/s eta 0:00:04    78% |#########################       | 94.9MB 6.9MB/s eta 0:00:04    78% |#########################       | 95.3MB 5.2MB/s eta 0:00:05    79% |#########################       | 95.7MB 6.9MB/s eta 0:00:04    82% |##########################      | 99.6MB 5.6MB/s eta 0:00:04    83% |##########################      | 100.6MB 5.7MB/s eta 0:00:04    83% |##########################      | 101.0MB 6.1MB/s eta 0:00:04    84% |##########################      | 101.7MB 6.4MB/s eta 0:00:03    85% |###########################     | 103.1MB 4.9MB/s eta 0:00:04    85% |###########################     | 103.5MB 7.5MB/s eta 0:00:03    85% |###########################     | 103.8MB 7.0MB/s eta 0:00:03    86% |###########################     | 104.1MB 7.3MB/s eta 0:00:03    87% |############################    | 105.9MB 10.5MB/s eta 0:00:02    88% |############################    | 106.6MB 5.4MB/s eta 0:00:03    89% |############################    | 108.3MB 6.4MB/s eta 0:00:02    93% |#############################   | 112.6MB 8.4MB/s eta 0:00:01    93% |#############################   | 113.0MB 6.2MB/s eta 0:00:02    93% |##############################  | 113.4MB 4.9MB/s eta 0:00:02    95% |##############################  | 115.0MB 5.2MB/s eta 0:00:02    96% |##############################  | 116.0MB 5.4MB/s eta 0:00:01    97% |############################### | 118.2MB 8.0MB/s eta 0:00:01
-    [?25hInstalling collected packages: en-core-web-md
-      Running setup.py install for en-core-web-md ... [?25ldone
-    [?25hSuccessfully installed en-core-web-md-2.0.0
-    
-    [93m    Linking successful[0m
-        /usr/local/lib/python3.6/dist-packages/en_core_web_md -->
-        /usr/local/lib/python3.6/dist-packages/spacy/data/en_core_web_md
-    
         You can now load the model via spacy.load('en_core_web_md')
-    
 
 
 
@@ -197,69 +183,70 @@ def similar(a, b):
 ```python
 test_random_tweets(tweets, bible_data)
 ```
+```text
+-----------------
+Tweet text: Next-Gen Bluetooth Bulb Controllable Via Smartphone | Freshome http://t.co/5oEjvL6c [A great patented idea - get it to market!]
 
-    -----------------
-    Tweet text: Next-Gen Bluetooth Bulb Controllable Via Smartphone | Freshome http://t.co/5oEjvL6c [A great patented idea - get it to market!]
-    
-    Nehemiah 3:32, Between the ascent of the corner and the sheep gate repaired the goldsmiths and the merchants., 0.38009049773755654
-    
-    Jeremiah 27:5, I have made the earth, the men and the animals that are on the surface of the earth, by my great power and by my outstretched arm; and I give it to whom it seems right to me., 0.3588039867109635
-    
-    1 Corinthians 10:7, Neither be idolaters, as some of them were. As it is written, The people sat down to eat and drink, and rose up to play., 0.3562753036437247
-    
-    Acts 2:20, The sun will be turned into darkness, and the moon into blood, before the great and glorious day of the Lord comes., 0.35537190082644626
-    
-    Matthew 18:4, Whoever therefore humbles himself as this little child, the same is the greatest in the Kingdom of Heaven., 0.351931330472103
-    -----------------
-    Tweet text: Ask Yourself: Are You Happier Now Than You Were 10 Years Ago? https://t.co/1MeEzAkHcT [+ report on happiness &amp; parenting: -ve ~ w/ GDP]
-    
-    Hosea 8:8, Israel is swallowed up. Now they are among the nations like a worthless thing., 0.35023041474654376
-    
-    Deuteronomy 29:4, but Yahweh has not given you a heart to know, and eyes to see, and ears to hear, to this day., 0.33620689655172414
-    
-    Amos 6:12, Do horses run on the rocky crags? Does one plow there with oxen? But you have turned justice into poison, and the fruit of righteousness into bitterness;, 0.3356164383561644
-    
-    Ephesians 4:28, Let him who stole steal no more; but rather let him labor, working with his hands the thing that is good, that he may have something to give to him who has need., 0.3333333333333333
-    
-    Psalm 112:1, Praise Yah! Blessed is the man who fears Yahweh, who delights greatly in his commandments., 0.3318777292576419
-    -----------------
-    Tweet text: The more possessions a person has, &amp; the more orderly the society, the greater the frequency of corporal punishment for children.
-    
-    1 Chronicles 26:19, These were the divisions of the doorkeepers; of the sons of the Korahites, and of the sons of Merari., 0.4700854700854701
-    
-    1 Samuel 17:31, When the words were heard which David spoke, they rehearsed them before Saul; and he sent for him., 0.4588744588744589
-    
-    2 Kings 20:4, It happened, before Isaiah had gone out into the middle part of the city, that the word of Yahweh came to him, saying,, 0.4541832669322709
-    
-    Exodus 39:38, the golden altar, the anointing oil, the sweet incense, the screen for the door of the Tent,, 0.4533333333333333
-    
-    Ezekiel 47:15, This shall be the border of the land: On the north side, from the great sea, by the way of Hethlon, to the entrance of Zedad;, 0.4496124031007752
-    -----------------
-    Tweet text: Rather than use subordinate clauses, old languages (~ C10 BC) juxtapose events according to temporal order.
-    
-    Genesis 30:34, Laban said, Behold, let it be according to your word., 0.475
-    
-    Numbers 15:12, According to the number that you shall prepare, so you shall do to everyone according to their number., 0.45933014354066987
-    
-    Numbers 26:53, To these the land shall be divided for an inheritance according to the number of names., 0.4329896907216495
-    
-    2 Kings 4:44, So he set it before them, and they ate, and left some of it, according to the word of Yahweh., 0.43
-    
-    2 Kings 7:16, The people went out, and plundered the camp of the Syrians. So a measure of fine flour was [sold] for a shekel, and two measures of barley for a shekel, according to the word of Yahweh., 0.4246575342465753
-    -----------------
-    Tweet text: The Economist | Amazon: http://t.co/wBm32F26yw [the world's 9th biggest retailer didn't exist 20 years ago] http://t.co/JY6Uq3iSIB
-    
-    2 Thessalonians 2:6, Now you know what is restraining him, to the end that he may be revealed in his own season., 0.39819004524886875
-    
-    Mark 16:13, They went away and told it to the rest. They didn't believe them, either., 0.39408866995073893
-    
-    John 14:24, He who doesn't love me doesn't keep my words. The word which you hear isn't mine, but the Father's who sent me., 0.37344398340248963
-    
-    1 Timothy 6:7, For we brought nothing into the world, and we certainly can't carry anything out., 0.3696682464454976
-    
-    Proverbs 13:1, A wise son listens to his father's instruction, but a scoffer doesn't listen to rebuke., 0.3686635944700461
+Nehemiah 3:32, Between the ascent of the corner and the sheep gate repaired the goldsmiths and the merchants., 0.38009049773755654
 
+Jeremiah 27:5, I have made the earth, the men and the animals that are on the surface of the earth, by my great power and by my outstretched arm; and I give it to whom it seems right to me., 0.3588039867109635
 
+1 Corinthians 10:7, Neither be idolaters, as some of them were. As it is written, The people sat down to eat and drink, and rose up to play., 0.3562753036437247
+
+Acts 2:20, The sun will be turned into darkness, and the moon into blood, before the great and glorious day of the Lord comes., 0.35537190082644626
+
+Matthew 18:4, Whoever therefore humbles himself as this little child, the same is the greatest in the Kingdom of Heaven., 0.351931330472103
+-----------------
+Tweet text: Ask Yourself: Are You Happier Now Than You Were 10 Years Ago? https://t.co/1MeEzAkHcT [+ report on happiness &amp; parenting: -ve ~ w/ GDP]
+
+Hosea 8:8, Israel is swallowed up. Now they are among the nations like a worthless thing., 0.35023041474654376
+
+Deuteronomy 29:4, but Yahweh has not given you a heart to know, and eyes to see, and ears to hear, to this day., 0.33620689655172414
+
+Amos 6:12, Do horses run on the rocky crags? Does one plow there with oxen? But you have turned justice into poison, and the fruit of righteousness into bitterness;, 0.3356164383561644
+
+Ephesians 4:28, Let him who stole steal no more; but rather let him labor, working with his hands the thing that is good, that he may have something to give to him who has need., 0.3333333333333333
+
+Psalm 112:1, Praise Yah! Blessed is the man who fears Yahweh, who delights greatly in his commandments., 0.3318777292576419
+-----------------
+Tweet text: The more possessions a person has, &amp; the more orderly the society, the greater the frequency of corporal punishment for children.
+
+1 Chronicles 26:19, These were the divisions of the doorkeepers; of the sons of the Korahites, and of the sons of Merari., 0.4700854700854701
+
+1 Samuel 17:31, When the words were heard which David spoke, they rehearsed them before Saul; and he sent for him., 0.4588744588744589
+
+2 Kings 20:4, It happened, before Isaiah had gone out into the middle part of the city, that the word of Yahweh came to him, saying,, 0.4541832669322709
+
+Exodus 39:38, the golden altar, the anointing oil, the sweet incense, the screen for the door of the Tent,, 0.4533333333333333
+
+Ezekiel 47:15, This shall be the border of the land: On the north side, from the great sea, by the way of Hethlon, to the entrance of Zedad;, 0.4496124031007752
+-----------------
+Tweet text: Rather than use subordinate clauses, old languages (~ C10 BC) juxtapose events according to temporal order.
+
+Genesis 30:34, Laban said, Behold, let it be according to your word., 0.475
+
+Numbers 15:12, According to the number that you shall prepare, so you shall do to everyone according to their number., 0.45933014354066987
+
+Numbers 26:53, To these the land shall be divided for an inheritance according to the number of names., 0.4329896907216495
+
+2 Kings 4:44, So he set it before them, and they ate, and left some of it, according to the word of Yahweh., 0.43
+
+2 Kings 7:16, The people went out, and plundered the camp of the Syrians. So a measure of fine flour was [sold] for a shekel, and two measures of barley for a shekel, according to the word of Yahweh., 0.4246575342465753
+-----------------
+Tweet text: The Economist | Amazon: http://t.co/wBm32F26yw [the world's 9th biggest retailer didn't exist 20 years ago] http://t.co/JY6Uq3iSIB
+
+2 Thessalonians 2:6, Now you know what is restraining him, to the end that he may be revealed in his own season., 0.39819004524886875
+
+Mark 16:13, They went away and told it to the rest. They didn't believe them, either., 0.39408866995073893
+
+John 14:24, He who doesn't love me doesn't keep my words. The word which you hear isn't mine, but the Father's who sent me., 0.37344398340248963
+
+1 Timothy 6:7, For we brought nothing into the world, and we certainly can't carry anything out., 0.3696682464454976
+
+Proverbs 13:1, A wise son listens to his father's instruction, but a scoffer doesn't listen to rebuke., 0.3686635944700461
+```
+
+---
 ### Gensim
 
 Gensim needs a little bit of pre-processing to convert our texts into vector form. We need to get a bag of words that represents each portion of text.
@@ -370,10 +357,10 @@ from nltk.corpus import stopwords
 ENG_STOPWORDS = stopwords.words('english')
 
 def text_preprocessing(original_text):
-    """Clean and process texts for Gensim methods.""" 
+    """Clean and process texts for Gensim methods."""
     # Tokenise
-    tokenised = word_tokenize(original_text) 
-    
+    tokenised = word_tokenize(original_text)
+
     # Convert to lowercase and remove non-text / stopwords
     tokenised = [w.lower() for w in tokenised if (w.isalpha() and w not in ENG_STOPWORDS)]
     return tokenised
@@ -454,35 +441,7 @@ print(corpus)
     2018-06-21 12:50:26,082 : INFO : saving sparse matrix to bible.mm
     2018-06-21 12:50:26,085 : INFO : PROGRESS: saving document #0
     2018-06-21 12:50:26,122 : INFO : PROGRESS: saving document #1000
-    2018-06-21 12:50:26,162 : INFO : PROGRESS: saving document #2000
-    2018-06-21 12:50:26,199 : INFO : PROGRESS: saving document #3000
-    2018-06-21 12:50:26,237 : INFO : PROGRESS: saving document #4000
-    2018-06-21 12:50:26,274 : INFO : PROGRESS: saving document #5000
-    2018-06-21 12:50:26,313 : INFO : PROGRESS: saving document #6000
-    2018-06-21 12:50:26,350 : INFO : PROGRESS: saving document #7000
-    2018-06-21 12:50:26,391 : INFO : PROGRESS: saving document #8000
-    2018-06-21 12:50:26,429 : INFO : PROGRESS: saving document #9000
-    2018-06-21 12:50:26,470 : INFO : PROGRESS: saving document #10000
-    2018-06-21 12:50:26,504 : INFO : PROGRESS: saving document #11000
-    2018-06-21 12:50:26,549 : INFO : PROGRESS: saving document #12000
-    2018-06-21 12:50:26,596 : INFO : PROGRESS: saving document #13000
-    2018-06-21 12:50:26,629 : INFO : PROGRESS: saving document #14000
-    2018-06-21 12:50:26,660 : INFO : PROGRESS: saving document #15000
-    2018-06-21 12:50:26,695 : INFO : PROGRESS: saving document #16000
-    2018-06-21 12:50:26,727 : INFO : PROGRESS: saving document #17000
-    2018-06-21 12:50:26,769 : INFO : PROGRESS: saving document #18000
-    2018-06-21 12:50:26,807 : INFO : PROGRESS: saving document #19000
-    2018-06-21 12:50:26,858 : INFO : PROGRESS: saving document #20000
-    2018-06-21 12:50:26,901 : INFO : PROGRESS: saving document #21000
-    2018-06-21 12:50:26,940 : INFO : PROGRESS: saving document #22000
-    2018-06-21 12:50:26,978 : INFO : PROGRESS: saving document #23000
-    2018-06-21 12:50:27,011 : INFO : PROGRESS: saving document #24000
-    2018-06-21 12:50:27,043 : INFO : PROGRESS: saving document #25000
-    2018-06-21 12:50:27,075 : INFO : PROGRESS: saving document #26000
-    2018-06-21 12:50:27,107 : INFO : PROGRESS: saving document #27000
-    2018-06-21 12:50:27,141 : INFO : PROGRESS: saving document #28000
-    2018-06-21 12:50:27,179 : INFO : PROGRESS: saving document #29000
-    2018-06-21 12:50:27,213 : INFO : PROGRESS: saving document #30000
+    ...
     2018-06-21 12:50:27,252 : INFO : PROGRESS: saving document #31000
     2018-06-21 12:50:27,259 : INFO : saved 31102x12255 matrix, density=0.089% (339121/381155010)
     2018-06-21 12:50:27,262 : INFO : saving MmCorpus index to bible.mm.index
@@ -491,11 +450,11 @@ print(corpus)
     to the client in order to avoid crashing it.
     To change this limit, set the config variable
     `--NotebookApp.iopub_data_rate_limit`.
-    
+
     Current values:
     NotebookApp.iopub_data_rate_limit=1000000.0 (bytes/sec)
     NotebookApp.rate_limit_window=3.0 (secs)
-    
+
 
 
 On a first run of this we note that most topics are defined by common stopwords. Let's get rid of these.
@@ -643,10 +602,10 @@ from nltk.corpus import stopwords
 ENG_STOPWORDS = stopwords.words('english')
 
 def text_preprocessing(original_text):
-    """Clean and process texts for Gensim methods.""" 
+    """Clean and process texts for Gensim methods."""
     # Tokenise
-    tokenised = word_tokenize(original_text) 
-    
+    tokenised = word_tokenize(original_text)
+
     # Convert to lowercase and remove non-text / stopwords
     tokenised = [w.lower() for w in tokenised if (w.isalpha() and w not in ENG_STOPWORDS)]
     return tokenised
@@ -684,7 +643,7 @@ def get_matches(tweet, bible_data, dictionary, lsi, index):
     sims = index[vec_lsi] # perform a similarity query against the corpus
     scores = [(p, v, s) for (p, v), s in zip(bible_data, sims)]
     # Sort by descending score
-    scores.sort(key=lambda tup: tup[2], reverse = True) 
+    scores.sort(key=lambda tup: tup[2], reverse = True)
     return scores
 
 def test_random_tweets(tweets, bible_data, n=5, k=5):
@@ -696,7 +655,7 @@ def test_random_tweets(tweets, bible_data, n=5, k=5):
         index = similarities.MatrixSimilarity.load('bible.index')
     except FileNotFoundError:
         dictionary, corpus, lsi, index = build_data(tweets, bible_data)
-        
+
     import random
     num_tweets = len(tweets)
     indices = random.sample(range(0, num_tweets), k)
@@ -766,35 +725,7 @@ test_random_tweets(tweets, bible_data)
     2018-06-21 13:42:20,768 : INFO : saving sparse matrix to bible.mm
     2018-06-21 13:42:20,770 : INFO : PROGRESS: saving document #0
     2018-06-21 13:42:20,809 : INFO : PROGRESS: saving document #1000
-    2018-06-21 13:42:20,846 : INFO : PROGRESS: saving document #2000
-    2018-06-21 13:42:20,884 : INFO : PROGRESS: saving document #3000
-    2018-06-21 13:42:20,923 : INFO : PROGRESS: saving document #4000
-    2018-06-21 13:42:20,961 : INFO : PROGRESS: saving document #5000
-    2018-06-21 13:42:21,002 : INFO : PROGRESS: saving document #6000
-    2018-06-21 13:42:21,041 : INFO : PROGRESS: saving document #7000
-    2018-06-21 13:42:21,084 : INFO : PROGRESS: saving document #8000
-    2018-06-21 13:42:21,125 : INFO : PROGRESS: saving document #9000
-    2018-06-21 13:42:21,167 : INFO : PROGRESS: saving document #10000
-    2018-06-21 13:42:21,203 : INFO : PROGRESS: saving document #11000
-    2018-06-21 13:42:21,245 : INFO : PROGRESS: saving document #12000
-    2018-06-21 13:42:21,286 : INFO : PROGRESS: saving document #13000
-    2018-06-21 13:42:21,314 : INFO : PROGRESS: saving document #14000
-    2018-06-21 13:42:21,345 : INFO : PROGRESS: saving document #15000
-    2018-06-21 13:42:21,377 : INFO : PROGRESS: saving document #16000
-    2018-06-21 13:42:21,405 : INFO : PROGRESS: saving document #17000
-    2018-06-21 13:42:21,448 : INFO : PROGRESS: saving document #18000
-    2018-06-21 13:42:21,488 : INFO : PROGRESS: saving document #19000
-    2018-06-21 13:42:21,530 : INFO : PROGRESS: saving document #20000
-    2018-06-21 13:42:21,583 : INFO : PROGRESS: saving document #21000
-    2018-06-21 13:42:21,627 : INFO : PROGRESS: saving document #22000
-    2018-06-21 13:42:21,680 : INFO : PROGRESS: saving document #23000
-    2018-06-21 13:42:21,727 : INFO : PROGRESS: saving document #24000
-    2018-06-21 13:42:21,762 : INFO : PROGRESS: saving document #25000
-    2018-06-21 13:42:21,795 : INFO : PROGRESS: saving document #26000
-    2018-06-21 13:42:21,827 : INFO : PROGRESS: saving document #27000
-    2018-06-21 13:42:21,868 : INFO : PROGRESS: saving document #28000
-    2018-06-21 13:42:21,903 : INFO : PROGRESS: saving document #29000
-    2018-06-21 13:42:21,935 : INFO : PROGRESS: saving document #30000
+    ...
     2018-06-21 13:42:21,970 : INFO : PROGRESS: saving document #31000
     2018-06-21 13:42:21,977 : INFO : saved 31102x12255 matrix, density=0.089% (339121/381155010)
     2018-06-21 13:42:21,980 : INFO : saving MmCorpus index to bible.mm.index
@@ -807,68 +738,68 @@ test_random_tweets(tweets, bible_data)
     2018-06-21 13:42:22,115 : INFO : saving MatrixSimilarity object under bible.index, separately None
     2018-06-21 13:42:22,250 : INFO : saved bible.index
 
+```text
+-----------------
+Tweet text: @sustrans Kids to Newbridge primary in Bath have river cycle path close - but no safe way to travel 200m up hill & across A-road or to path
 
-    -----------------
-    Tweet text: @sustrans Kids to Newbridge primary in Bath have river cycle path close - but no safe way to travel 200m up hill & across A-road or to path
-    
-    Genesis 49:17, Dan will be a serpent in the way, an adder in the path, That bites the horse's heels, so that his rider falls backward., 0.9940089583396912
-    
-    Psalm 80:12, Why have you broken down its walls, so that all those who pass by the way pluck it?, 0.9881158471107483
-    
-    Proverbs 13:6, Righteousness guards the way of integrity, but wickedness overthrows the sinner., 0.9859569668769836
-    
-    Genesis 35:19, Rachel died, and was buried in the way to Ephrath (the same is Bethlehem)., 0.9790574312210083
-    
-    Ezekiel 12:5, Dig through the wall in their sight, and carry your stuff out that way., 0.9741089344024658
-    -----------------
-    Tweet text: Stand-Up Comics Have to Censor Their Jokes on (US) College Campuses - The Atlantic http://t.co/W998v8oahs
-    
-    Lamentations 5:16, The crown is fallen from our head: Woe to us! for we have sinned., 0.9783570766448975
-    
-    Acts 28:2, The natives showed us uncommon kindness; for they kindled a fire, and received us all, because of the present rain, and because of the cold., 0.9126466512680054
-    
-    Deuteronomy 26:6, The Egyptians dealt ill with us, and afflicted us, and laid on us hard bondage:, 0.89407879114151
-    
-    Ezra 4:18, The letter which you sent to us has been plainly read before me., 0.863696277141571
-    
-    Judges 9:12, The trees said to the vine, 'Come and reign over us.', 0.8148699998855591
-    -----------------
-    Tweet text: Ha - was just reminded of the 90s Internet time limits, e.g. 5 hours online per week. Could do with that now.
-    
-    Ecclesiastes 3:4, a time to weep, and a time to laugh; a time to mourn, and a time to dance;, 0.9986615180969238
-    
-    Ecclesiastes 3:3, a time to kill, and a time to heal; a time to break down, and a time to build up;, 0.9981067180633545
-    
-    Matthew 26:16, From that time he sought opportunity to betray him., 0.9979551434516907
-    
-    Ecclesiastes 3:2, a time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted;, 0.9977869987487793
-    
-    Hebrews 9:10, being only (with meats and drinks and various washings) fleshly ordinances, imposed until a time of reformation., 0.9975525736808777
-    -----------------
-    Tweet text: Here's What Happened To All 53 of Marissa Mayer's Yahoo Acquisitions https://t.co/0YT2TXncHN
-    
-    Luke 24:51, It happened, while he blessed them, that he withdrew from them, and was carried up into heaven., 0.8907666802406311
-    
-    Joshua 5:8, It happened, when they were done circumcising all the nation, that they stayed in their places in the camp until they were healed., 0.8737368583679199
-    
-    1 Kings 15:21, It happened, when Baasha heard of it, that he left off building Ramah, and lived in Tirzah., 0.8584436178207397
-    
-    Joshua 19:26, Allammelech, Amad, Mishal. It reached to Carmel westward, and to Shihorlibnath., 0.8564523458480835
-    
-    2 Corinthians 9:1, It is indeed unnecessary for me to write to you concerning the service to the saints,, 0.852521538734436
-    -----------------
-    Tweet text: Even with more complex deep architectures you can get a surprising amount done with simple ngram approaches - a future in hybrids? https://t.co/jD3pIhnIbP
-    
-    Daniel 9:5, we have sinned, and have dealt perversely, and have done wickedly, and have rebelled, even turning aside from your precepts and from your ordinances;, 0.9942108988761902
-    
-    Ephesians 5:11, Have no fellowship with the unfruitful works of darkness, but rather even reprove them., 0.9036127924919128
-    
-    Joshua 10:41, Joshua struck them from Kadesh Barnea even to Gaza, and all the country of Goshen, even to Gibeon., 0.885510265827179
-    
-    Numbers 21:30, We have shot at them. Heshbon has perished even to Dibon. We have laid waste even to Nophah, Which reaches to Medeba., 0.8847762942314148
-    
-    Deuteronomy 4:48, from Aroer, which is on the edge of the valley of the Arnon, even to Mount Sion (the same is Hermon),, 0.882093071937561
+Genesis 49:17, Dan will be a serpent in the way, an adder in the path, That bites the horse's heels, so that his rider falls backward., 0.9940089583396912
 
+Psalm 80:12, Why have you broken down its walls, so that all those who pass by the way pluck it?, 0.9881158471107483
+
+Proverbs 13:6, Righteousness guards the way of integrity, but wickedness overthrows the sinner., 0.9859569668769836
+
+Genesis 35:19, Rachel died, and was buried in the way to Ephrath (the same is Bethlehem)., 0.9790574312210083
+
+Ezekiel 12:5, Dig through the wall in their sight, and carry your stuff out that way., 0.9741089344024658
+-----------------
+Tweet text: Stand-Up Comics Have to Censor Their Jokes on (US) College Campuses - The Atlantic http://t.co/W998v8oahs
+
+Lamentations 5:16, The crown is fallen from our head: Woe to us! for we have sinned., 0.9783570766448975
+
+Acts 28:2, The natives showed us uncommon kindness; for they kindled a fire, and received us all, because of the present rain, and because of the cold., 0.9126466512680054
+
+Deuteronomy 26:6, The Egyptians dealt ill with us, and afflicted us, and laid on us hard bondage:, 0.89407879114151
+
+Ezra 4:18, The letter which you sent to us has been plainly read before me., 0.863696277141571
+
+Judges 9:12, The trees said to the vine, 'Come and reign over us.', 0.8148699998855591
+-----------------
+Tweet text: Ha - was just reminded of the 90s Internet time limits, e.g. 5 hours online per week. Could do with that now.
+
+Ecclesiastes 3:4, a time to weep, and a time to laugh; a time to mourn, and a time to dance;, 0.9986615180969238
+
+Ecclesiastes 3:3, a time to kill, and a time to heal; a time to break down, and a time to build up;, 0.9981067180633545
+
+Matthew 26:16, From that time he sought opportunity to betray him., 0.9979551434516907
+
+Ecclesiastes 3:2, a time to be born, and a time to die; a time to plant, and a time to pluck up that which is planted;, 0.9977869987487793
+
+Hebrews 9:10, being only (with meats and drinks and various washings) fleshly ordinances, imposed until a time of reformation., 0.9975525736808777
+-----------------
+Tweet text: Here's What Happened To All 53 of Marissa Mayer's Yahoo Acquisitions https://t.co/0YT2TXncHN
+
+Luke 24:51, It happened, while he blessed them, that he withdrew from them, and was carried up into heaven., 0.8907666802406311
+
+Joshua 5:8, It happened, when they were done circumcising all the nation, that they stayed in their places in the camp until they were healed., 0.8737368583679199
+
+1 Kings 15:21, It happened, when Baasha heard of it, that he left off building Ramah, and lived in Tirzah., 0.8584436178207397
+
+Joshua 19:26, Allammelech, Amad, Mishal. It reached to Carmel westward, and to Shihorlibnath., 0.8564523458480835
+
+2 Corinthians 9:1, It is indeed unnecessary for me to write to you concerning the service to the saints,, 0.852521538734436
+-----------------
+Tweet text: Even with more complex deep architectures you can get a surprising amount done with simple ngram approaches - a future in hybrids? https://t.co/jD3pIhnIbP
+
+Daniel 9:5, we have sinned, and have dealt perversely, and have done wickedly, and have rebelled, even turning aside from your precepts and from your ordinances;, 0.9942108988761902
+
+Ephesians 5:11, Have no fellowship with the unfruitful works of darkness, but rather even reprove them., 0.9036127924919128
+
+Joshua 10:41, Joshua struck them from Kadesh Barnea even to Gaza, and all the country of Goshen, even to Gibeon., 0.885510265827179
+
+Numbers 21:30, We have shot at them. Heshbon has perished even to Dibon. We have laid waste even to Nophah, Which reaches to Medeba., 0.8847762942314148
+
+Deuteronomy 4:48, from Aroer, which is on the edge of the valley of the Arnon, even to Mount Sion (the same is Hermon),, 0.882093071937561
+```
 
 ### Comparing Approaches
 
@@ -882,22 +813,22 @@ def get_difflib_matches(tweet, bible_data):
     """Match a tweet against the bible_data."""
     # Get matches
     scores = [
-        (verse, passage, SequenceMatcher(None, tweet, passage).ratio()) 
+        (verse, passage, SequenceMatcher(None, tweet, passage).ratio())
         for verse, passage in bible_data
     ]
     # Sort by descending score
-    scores.sort(key=lambda tup: tup[2], reverse = True) 
+    scores.sort(key=lambda tup: tup[2], reverse = True)
     return scores
 
 def get_spacy_matches(spacy_tweet, spacy_bible):
     """Perform matches on text as spacy docs"""
     # Get matches
     scores = [
-        (verse, passage, spacy_tweet.similarity(passage)) 
+        (verse, passage, spacy_tweet.similarity(passage))
         for verse, passage in spacy_bible
     ]
     # Sort by descending score
-    scores.sort(key=lambda tup: tup[2], reverse = True) 
+    scores.sort(key=lambda tup: tup[2], reverse = True)
     return scores
 
 def get_gensim_matches(tweet, bible_data, dictionary, lsi, index):
@@ -908,7 +839,7 @@ def get_gensim_matches(tweet, bible_data, dictionary, lsi, index):
     sims = index[vec_lsi] # perform a similarity query against the corpus
     scores = [(v, p, s) for (v, p), s in zip(bible_data, sims)]
     # Sort by descending score
-    scores.sort(key=lambda tup: tup[2], reverse = True) 
+    scores.sort(key=lambda tup: tup[2], reverse = True)
     return scores
 ```
 
@@ -1022,9 +953,9 @@ for i in indices:
     sp_match = get_spacy_matches(spacy_tweet, spacy_bible)[0]
     gs_match = get_gensim_matches(tweet, bible_data, dictionary, lsi, index)[0]
     comparison_row = (
-        tweet, 
-        dl_match[1], dl_match[2], "", 
-        sp_match[1].text, sp_match[2], "", 
+        tweet,
+        dl_match[1], dl_match[2], "",
+        sp_match[1].text, sp_match[2], "",
         gs_match[1], gs_match[2], ""
     )
     rows.append(comparison_row)
